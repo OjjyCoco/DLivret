@@ -2,5 +2,10 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "hardhat": "^2.22.19"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0",
+    "@pendle/core-v2": "^5.8.0-bera-2",
+    "dotenv": "^16.4.7"
   }
 }
