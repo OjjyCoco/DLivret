@@ -1,0 +1,6 @@
+// quid de la fin de la maturité ? Changement d'adresse ?
+// test à organiser
+// quel est le workflow du user pour faire ses approve ? USDe et PT USDe
+// approveTokens() à passer en internal et à call ?
+// swapData ?
+// utiliser IPAllActionTypeV3 et plus StructGen
