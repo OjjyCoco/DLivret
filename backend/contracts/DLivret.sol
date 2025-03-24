@@ -12,6 +12,11 @@ contract RouterSampleUSDe is Ownable {
     address public tokenIn; // = 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3; // tokenIn token address
     address public PTtokenIn; // = 0x917459337CaAC939D41d7493B3999f571D20D667; // PT tokenIn token address
 
+    event BoughtPT(address sender, uint amountIn, uint netPtOut);
+    event SoldPT(address sender, uint amountPtIn, uint netTokenOut);
+
+    error TransferFromError();
+
     function setMarketAndToken(address _market, address _tokenIn) public onlyOwner {
         require(!IPMarket(_market).isExpired(), "Market has already expired");
         market = IPMarket(_market);
@@ -26,7 +31,7 @@ contract RouterSampleUSDe is Ownable {
 
     function buyPT(uint256 amountIn) external returns (uint256 netPtOut) {
         // First, transfer tokenIn from user to contract
-        require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn), "Transfer tokenIn failed");
+        require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn), TransferFromError());
         IERC20(tokenIn).approve(address(router), type(uint256).max);
         (netPtOut, , ) = router.swapExactTokenForPt(
             msg.sender, // receiver
@@ -37,12 +42,12 @@ contract RouterSampleUSDe is Ownable {
             createEmptyLimitOrderData()
         );
 
-        // emit BoughtPT(msg.sender, amountIn, netPtOut);
+        emit BoughtPT(msg.sender, amountIn, netPtOut);
     }
 
     function sellPT(uint256 amountPtIn) external returns (uint256 netTokenOut) {
         // Transfer PT from user to contract
-        require(IERC20(PTtokenIn).transferFrom(msg.sender, address(this), amountPtIn), "Transfer PT failed");
+        require(IERC20(PTtokenIn).transferFrom(msg.sender, address(this), amountPtIn), TransferFromError());
         IERC20(PTtokenIn).approve(address(router), type(uint256).max);
         (netTokenOut, , ) = router.swapExactPtForToken(
             msg.sender, // receiver
@@ -52,6 +57,6 @@ contract RouterSampleUSDe is Ownable {
             createEmptyLimitOrderData()
         );
 
-        // emit SoldPT(msg.sender, amountPtIn, netTokenOut);
+        emit SoldPT(msg.sender, amountPtIn, netTokenOut);
     }
 }
