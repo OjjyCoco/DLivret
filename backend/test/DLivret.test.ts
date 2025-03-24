@@ -7,7 +7,10 @@ describe("DLivret tests", function () {
     async function deployContract() {
         const [owner, user] = await ethers.getSigners();
         const DLivret = await ethers.getContractFactory("RouterSampleUSDe");
-        const dlivret = await DLivret.deploy();
+        const dlivret = await DLivret.deploy(
+            "0x9Df192D13D61609D1852461c4850595e1F56E714", // Market address
+            "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"  // USDe address
+        );
 
         return { dlivret, owner, user };
     }
@@ -59,9 +62,6 @@ describe("DLivret tests", function () {
             await USDe.connect(user).approve(dlivret.target, transferAmount);
             console.log(`User approved Dlivret to spend USDe`);
 
-            // Approve tokens for router
-            await dlivret.connect(user).approveTokens();
-
             // User buys PT
             const buyTx = await dlivret.connect(user).buyPT(transferAmount);
             const buyReceipt = await buyTx.wait();
@@ -73,7 +73,7 @@ describe("DLivret tests", function () {
             expect(ptBalance).to.be.gt(0);
 
             // Advance time by 125 days
-            const days = 60;
+            const days = 20;
             await helpers.time.increase(days * 24 * 60 * 60);
             console.log(`Advanced time by ${days} days`);
 

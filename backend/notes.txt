@@ -1,6 +1,11 @@
-// quid de la fin de la maturité ? Changement d'adresse ?
+// obligé que le user transfers ses tokens au contrat ?
+// quid de la fin de la maturité ? Changement d'adresse ? setMarket ?
 // test à organiser
-// quel est le workflow du user pour faire ses approve ? USDe et PT USDe
-// approveTokens() à passer en internal et à call ?
+// quel est le workflow du user pour faire ses approve à notre contrat ? USDe et PT USDe
 // swapData ?
-// utiliser IPAllActionTypeV3 et plus StructGen
+
+
+IPAllActionV3 public constant router = IPAllActionV3(0x888888888889758F76e7103c6CbF23ABbF58F946);
+IPMarket public constant market = IPMarket(0x9Df192D13D61609D1852461c4850595e1F56E714); // tokenIn market address
+address public constant tokenIn = 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3; // tokenIn token address
+address public constant PTtokenIn = 0x917459337CaAC939D41d7493B3999f571D20D667; // PT tokenIn token address
