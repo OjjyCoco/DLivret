@@ -9,6 +9,9 @@ import Header from "@/components/shared/Header"
 // dark mode
 import { ThemeProvider } from "@/components/theme-provider"
 
+// rainbowkit provider, including wagmi, viem...
+import RainbowkitProvider from "./RainbowkitProvider";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -35,20 +38,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-          <div className="app">
-            <Header />
-              <main className="main">
-                {children}
-              </main>
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <RainbowkitProvider>
+          <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+            <div className="app">
+              <Header />
+                <main className="main">
+                  {children}
+                </main>
+              <Footer />
+            </div>
+          </ThemeProvider>
+        </RainbowkitProvider>
       </body>
     </html>
   );

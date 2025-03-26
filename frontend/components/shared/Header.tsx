@@ -2,6 +2,8 @@ import Image from "next/image";
 
 // dark mode button
 import { ModeToggle } from "./ModeToggle";
+// wallet button
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 const Header: React.FC = () => {
     return (
@@ -16,7 +18,7 @@ const Header: React.FC = () => {
             />
             <p>Navbar</p>
             <div className="flex items-center space-x-4">
-                <p>Connect Wallet Button</p>
+                <ConnectButton chainStatus="full" showBalance={false}/>
                 <ModeToggle/>
             </div>
         </nav>
