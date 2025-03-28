@@ -95,16 +95,30 @@ describe("RouterSampleUSDe Contract Tests", function () {
             expect(ptBalance).to.be.gt(0);
         });
 
+        it('Should increase the contract USDe balance', async function () {
+            const { dlivret, owner, user } = await loadFixture(readyToBuy);
+
+            const buyAmount = ethers.parseUnits("1000", 18);
+            
+            // User buys PT
+            const buyTx = await dlivret.connect(user).buyPT(buyAmount);
+            
+            const contractUSDeBalance = await USDe.balanceOf(dlivret.target);
+            console.log(`Contract USDe balance after user buys PT: ${ethers.formatUnits(contractUSDeBalance, 18)} USDe`);
+            expect(contractUSDeBalance).to.be.gt(0);
+        });
+
         it('Emit BoughtPT event', async function () {
             const { dlivret, user } = await loadFixture(readyToBuy);
             const buyAmount = ethers.parseUnits("1000", 18);
             const tx = await dlivret.connect(user).buyPT(buyAmount);
             const ptBalance = await PT.balanceOf(user.address);
+            const amountSwaped = (buyAmount * BigInt(997)) / BigInt(1000); // Ensure BigInt arithmetic
             await expect(tx).to.emit(dlivret, "BoughtPT")
-            .withArgs(user.address, buyAmount, ptBalance);
+            .withArgs(user.address, amountSwaped, ptBalance);
         });
 
-        it('Should fail if not enough USDe', async function () {
+        it('Should revert if not enough USDe', async function () {
             const { dlivret, user } = await loadFixture(readyToBuy);
 
             const USDe = await ethers.getContractAt(ERC20_ABI, USDe_ADDRESS);
@@ -116,7 +130,7 @@ describe("RouterSampleUSDe Contract Tests", function () {
                 .to.be.revertedWith("ERC20: transfer amount exceeds balance");
         });
 
-        it('Should fail if not enough USDe allowance', async function () {
+        it('Should revert if not enough USDe allowance', async function () {
             const { dlivret, user } = await loadFixture(deployContract);
 
             const USDe = await ethers.getContractAt(ERC20_ABI, USDe_ADDRESS);
@@ -171,16 +185,32 @@ describe("RouterSampleUSDe Contract Tests", function () {
             expect(usdeBalanceAfter).to.be.gt(0);
         });
 
-        it('Emit BoughtPT event', async function () {
+        it('Should increase the contract PT USDe balance', async function () {
+
+            const ptBalance = await PT.balanceOf(user.address);
+    
+            // Approve PT transfer
+            await PT.connect(user).approve(dlivret.target, ptBalance);
+    
+            // Sell PT
+            const sellTx = await dlivret.connect(user).sellPT(ptBalance);
+            
+            const contractPTUSDeBalance = await PT.balanceOf(dlivret.target);
+            console.log(`Contract PT USDe balance after user buys PT: ${ethers.formatUnits(contractPTUSDeBalance, 18)} PT USDe`);
+            expect(contractPTUSDeBalance).to.be.gt(0);
+        });
+
+        it('Emit SoldPT event', async function () {
             const ptBalance = await PT.balanceOf(user.address);
             await PT.connect(user).approve(dlivret.target, ptBalance);
             const tx = await dlivret.connect(user).sellPT(ptBalance);
             const USDeBalance = await USDe.balanceOf(user.address);
+            const amountSwaped = (ptBalance * BigInt(999)) / BigInt(1000); // Ensure BigInt arithmetic
             await expect(tx).to.emit(dlivret, "SoldPT")
-            .withArgs(user.address, ptBalance, USDeBalance);
+            .withArgs(user.address, amountSwaped, USDeBalance);
         });
 
-        it('Should fail if not enough PT USDe', async function () {
+        it('Should revert if not enough PT USDe', async function () {
             const tooMuchAmount = ethers.parseUnits("1500", 18);
 
             await PT.connect(user).approve(dlivret.target, tooMuchAmount);
@@ -189,7 +219,7 @@ describe("RouterSampleUSDe Contract Tests", function () {
                 .to.be.revertedWith("ERC20: transfer amount exceeds balance");
         });
 
-        it('Should fail if not enough PT allowance', async function () {
+        it('Should revert if not enough PT allowance', async function () {
             const { dlivret, user } = await loadFixture(deployContract);
 
             const amountApproved = ethers.parseUnits("500", 18);

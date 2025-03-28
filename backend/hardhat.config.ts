@@ -20,7 +20,7 @@ const config: HardhatUserConfig = {
       forking: {
         enabled: true,
         url: ALCHEMY_MAINNET_RPC,
-        blockNumber: 22137854
+        blockNumber: 22144922
       },
     }
   }

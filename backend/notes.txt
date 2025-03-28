@@ -12,6 +12,20 @@ address public constant PTtokenIn = 0x917459337CaAC939D41d7493B3999f571D20D667; 
 
 
 
+===========================
+withdrawTokens func saver :
+===========================
+
+
+function withdrawTokens() external onlyOwner {
+        uint256 contractBalance = IERC20(tokenIn).balanceOf(address(this));
+        IERC20(tokenIn).transfer(owner(), contractBalance);
+
+        contractBalance = IERC20(PTtokenIn).balanceOf(address(this));
+        IERC20(PTtokenIn).transfer(owner(), contractBalance);
+    }
+
+
 ======================
 Old test file saver :
 ======================

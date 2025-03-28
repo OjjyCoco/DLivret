@@ -33,30 +33,33 @@ contract RouterSampleUSDe is Ownable {
         // First, transfer tokenIn from user to contract
         require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn), TransferFromError());
         IERC20(tokenIn).approve(address(router), type(uint256).max);
+        uint256 amountSwaped = (amountIn * 997) / 1000;
         (netPtOut, , ) = router.swapExactTokenForPt(
             msg.sender, // receiver
             address(market),
-            amountIn, // minPtOut
+            amountSwaped, // minPtOut * input fees
             createDefaultApproxParams(),
-            createTokenInputSimple(tokenIn, amountIn),
+            createTokenInputSimple(tokenIn, amountSwaped), // we take 0.03% input fees
             createEmptyLimitOrderData()
         );
 
-        emit BoughtPT(msg.sender, amountIn, netPtOut);
+        emit BoughtPT(msg.sender, amountSwaped, netPtOut);
     }
 
     function sellPT(uint256 amountPtIn) external returns (uint256 netTokenOut) {
         // Transfer PT from user to contract
         require(IERC20(PTtokenIn).transferFrom(msg.sender, address(this), amountPtIn), TransferFromError());
         IERC20(PTtokenIn).approve(address(router), type(uint256).max);
+        uint256 amountSwaped = (amountPtIn * 999) / 1000;
         (netTokenOut, , ) = router.swapExactPtForToken(
             msg.sender, // receiver
             address(market),
-            amountPtIn, // exactPtIn
+            amountSwaped, // exactPtIn
             createTokenOutputSimple(tokenIn, 0), // tokenOut, minTokenOut
             createEmptyLimitOrderData()
         );
 
-        emit SoldPT(msg.sender, amountPtIn, netTokenOut);
+        emit SoldPT(msg.sender, amountSwaped, netTokenOut);
     }
+
 }
