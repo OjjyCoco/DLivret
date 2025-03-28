@@ -8,7 +8,7 @@ import { ethers } from "hardhat";
     const usde = await ethers.getContractAt("IERC20", USDe_ADDRESS);
     const signer = await ethers.getSigner(USER); // Your address
 
-    // Approve your deployed RouterSampleUSDe contract (replace with actual deployed address)
+    // Approve your deployed DLivretPT contract (replace with actual deployed address)
     const routerAddress = "0x67832b9Fc47eb3CdBF7275b95a29740EC58193D2"; // DLivret address
     const amount = ethers.parseUnits("100", 18); // Approving 100 USDe
 

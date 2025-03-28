@@ -5,8 +5,9 @@ import "@pendle/core-v2/contracts/interfaces/IPAllActionV3.sol"; // ^0.8.0
 import "@pendle/core-v2/contracts/interfaces/IPMarket.sol"; // ^0.8.0
 import "@pendle/core-v2/contracts/interfaces/IPAllActionTypeV3.sol"; // ^0.8.0
 import "@openzeppelin/contracts/access/Ownable.sol"; // ^0.8.20
+import "./DLivretTicket.sol"; // 0.8.28
 
-contract RouterSampleUSDe is Ownable {
+contract DLivretPT is Ownable {
     IPAllActionV3 public constant router = IPAllActionV3(0x888888888889758F76e7103c6CbF23ABbF58F946);
     IPMarket public market; // = IPMarket(0x9Df192D13D61609D1852461c4850595e1F56E714); // tokenIn market address
     address public tokenIn; // = 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3; // tokenIn token address
@@ -30,7 +31,7 @@ contract RouterSampleUSDe is Ownable {
     }
 
     function buyPT(uint256 amountIn) external returns (uint256 netPtOut) {
-        // First, transfer tokenIn from user to contract
+        // Transfer tokenIn from user to contract
         require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn), TransferFromError());
         IERC20(tokenIn).approve(address(router), type(uint256).max);
         uint256 amountSwaped = (amountIn * 997) / 1000;
@@ -42,6 +43,8 @@ contract RouterSampleUSDe is Ownable {
             createTokenInputSimple(tokenIn, amountSwaped), // we take 0.03% input fees
             createEmptyLimitOrderData()
         );
+
+        // DLivretTicket(ticketContract).mintTicket(user);
 
         emit BoughtPT(msg.sender, amountSwaped, netPtOut);
     }
@@ -58,6 +61,8 @@ contract RouterSampleUSDe is Ownable {
             createTokenOutputSimple(tokenIn, 0), // tokenOut, minTokenOut
             createEmptyLimitOrderData()
         );
+
+        // DLivretTicket(ticketContract).mintTicket(user);
 
         emit SoldPT(msg.sender, amountSwaped, netTokenOut);
     }
