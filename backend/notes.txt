@@ -11,6 +11,18 @@ address public constant tokenIn = 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3; //
 address public constant PTtokenIn = 0x917459337CaAC939D41d7493B3999f571D20D667; // PT tokenIn token address
 
 
+========================================
+getCurrentTicketId() in DLivretTicket :
+========================================
+
+// Advance time by days
+const days = 7;
+await helpers.time.increase(days * 24 * 60 * 60);
+
+const currentTicketId7DaysLater = await dlivretTicket.getCurrentTicketId()
+console.log("getCurrentTicketId() + 7 days : ", currentTicketId7DaysLater)
+
+
 
 ===========================
 withdrawTokens func saver :

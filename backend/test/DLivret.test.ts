@@ -3,6 +3,7 @@ const { assert, expect } = require("chai");
 const { ethers } = require("hardhat");
 const helpers = require("@nomicfoundation/hardhat-network-helpers");
 
+
 describe("DLivretPT Contract Tests", function () {
 
     let user: any, dlivretPT: any, dlivretTicket: any, owner: any, PT: any, USDe: any;
@@ -28,13 +29,15 @@ describe("DLivretPT Contract Tests", function () {
         const DLivretTicket = await ethers.getContractFactory("DLivretTicket");
         const dlivretTicket = await DLivretTicket.deploy();
 
+        await dlivretTicket.connect(owner).addContractCaller("0xe3e4631D734e4b3F900AfcC396440641Ed0df339");
+
         return { dlivretPT, dlivretTicket, owner, user };
     }
 
     // fixture when user is already funded with USDe and has approved DLivret contract
     async function readyToBuy(){        
         // Deploy contract and get signers
-        const { dlivretPT, owner, user } = await loadFixture(deployContract);
+        const { dlivretPT, dlivretTicket, owner, user } = await loadFixture(deployContract);
     
         // Get contract instances
         PT = await ethers.getContractAt(ERC20_ABI, PT_ADDRESS);
@@ -51,7 +54,7 @@ describe("DLivretPT Contract Tests", function () {
         // User approves DLivret contract
         await USDe.connect(user).approve(dlivretPT.target, transferAmount);
 
-        return { dlivretPT, owner, user };
+        return { dlivretPT, dlivretTicket, owner, user };
     }
 
     describe('Deployment', function () {
@@ -81,7 +84,7 @@ describe("DLivretPT Contract Tests", function () {
     describe('Buy PT', function () {
 
         it('Should buy PT', async function () {
-            const { dlivretPT, owner, user } = await loadFixture(readyToBuy);
+            const { dlivretPT, user } = await loadFixture(readyToBuy);
 
             const buyAmount = ethers.parseUnits("1000", 18);
             
@@ -96,10 +99,11 @@ describe("DLivretPT Contract Tests", function () {
             const ptBalance = await PT.balanceOf(user.address);
             console.log(`User PT USDe balance after buying PT: ${ethers.formatUnits(ptBalance, 18)} PT USDe`);
             expect(ptBalance).to.be.gt(0);
+
         });
 
         it('Should increase the contract USDe balance', async function () {
-            const { dlivretPT, owner, user } = await loadFixture(readyToBuy);
+            const { dlivretPT, user } = await loadFixture(readyToBuy);
 
             const buyAmount = ethers.parseUnits("1000", 18);
             
@@ -109,6 +113,27 @@ describe("DLivretPT Contract Tests", function () {
             const contractUSDeBalance = await USDe.balanceOf(dlivretPT.target);
             console.log(`Contract USDe balance after user buys PT: ${ethers.formatUnits(contractUSDeBalance, 18)} USDe`);
             expect(contractUSDeBalance).to.be.gt(0);
+        });
+
+        it('Should add the week lotery ticket to the user balance', async function (){
+
+            const { dlivretPT, dlivretTicket, owner, user } = await loadFixture(readyToBuy);
+            const buyAmount = ethers.parseUnits("100", 18);
+            // User buys PT
+            const buyTx = await dlivretPT.connect(user).buyPT(buyAmount);
+            await dlivretPT.connect(user).buyPT(buyAmount);
+
+            // Get current block timestamp
+            const latestBlock = await ethers.provider.getBlock('latest');
+            const blockTimestamp = latestBlock.timestamp;
+
+            // Calculate expected ticket ID (weekly)
+            const expectedTicketId = Math.floor(blockTimestamp / (7 * 24 * 60 * 60));
+
+            const userTicketBalance = await dlivretTicket.balanceOf(user.address, expectedTicketId);
+            console.log("userTicketBalance: ", userTicketBalance)
+            expect(userTicketBalance).to.equal(2);
+
         });
 
         it('Emit BoughtPT event', async function () {

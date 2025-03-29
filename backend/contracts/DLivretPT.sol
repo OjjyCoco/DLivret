@@ -9,9 +9,10 @@ import "./DLivretTicket.sol"; // 0.8.28
 
 contract DLivretPT is Ownable {
     IPAllActionV3 public constant router = IPAllActionV3(0x888888888889758F76e7103c6CbF23ABbF58F946);
-    IPMarket public market; // = IPMarket(0x9Df192D13D61609D1852461c4850595e1F56E714); // tokenIn market address
-    address public tokenIn; // = 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3; // tokenIn token address
-    address public PTtokenIn; // = 0x917459337CaAC939D41d7493B3999f571D20D667; // PT tokenIn token address
+    IPMarket public market;
+    address public tokenIn;
+    address public PTtokenIn;
+    DLivretTicket public constant dlivretTicket = DLivretTicket(0x8729c0238b265BaCF6fE397E8309897BB5c40473);
 
     event BoughtPT(address sender, uint amountIn, uint netPtOut);
     event SoldPT(address sender, uint amountPtIn, uint netTokenOut);
@@ -44,7 +45,7 @@ contract DLivretPT is Ownable {
             createEmptyLimitOrderData()
         );
 
-        // DLivretTicket(ticketContract).mintTicket(user);
+        dlivretTicket.mintTicket(msg.sender);
 
         emit BoughtPT(msg.sender, amountSwaped, netPtOut);
     }
