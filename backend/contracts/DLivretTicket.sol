@@ -50,9 +50,4 @@ contract DLivretTicket is ERC1155, Ownable {
 
         emit TicketBurned(user, ticketId, value);
     }
-
-    // override transfers to disables tokens transfer between users
-    //
-    // here
-    //
 }

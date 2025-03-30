@@ -29,7 +29,11 @@ describe("DLivretPT Contract Tests", function () {
         const DLivretTicket = await ethers.getContractFactory("DLivretTicket");
         const dlivretTicket = await DLivretTicket.deploy();
 
-        await dlivretTicket.connect(owner).addContractCaller("0xe3e4631D734e4b3F900AfcC396440641Ed0df339");
+        await dlivretTicket.connect(owner).addContractCaller("0xa86582Ad5E80abc19F95f8A9Fb3905Cda0dAbd59");
+
+        console.log("Deployed DLivretPT at:", dlivretPT.target);
+        console.log("Deployed DLivretTicket at:", dlivretTicket.target);
+
 
         return { dlivretPT, dlivretTicket, owner, user };
     }
