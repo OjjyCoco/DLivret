@@ -50,4 +50,27 @@ contract DLivretTicket is ERC1155, Ownable {
 
         emit TicketBurned(user, ticketId, value);
     }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public override {
+        require(from == address(0) || to == address(0), "Transfers disabled");
+        super.safeTransferFrom(from, to, id, amount, data);
+    }
+
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public override {
+        require(from == address(0) || to == address(0), "Transfers disabled");
+        super.safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
+
 }
