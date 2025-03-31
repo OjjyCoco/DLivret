@@ -7,6 +7,7 @@
     "@nomicfoundation/hardhat-network-helpers": "^1.0.12",
     "@openzeppelin/contracts": "^5.2.0",
     "@pendle/core-v2": "^5.8.0-bera-2",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "hardhat-gas-reporter": "^2.2.2"
   }
 }

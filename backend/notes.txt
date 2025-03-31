@@ -1,6 +1,6 @@
-// obligé que le user transfers ses tokens au contrat ?
-// quel est le workflow du user pour faire ses approve à notre contrat ? USDe et PT USDe
-// swapData ?
+// opti / sécu - gaz
+// déploiement mainnet, cher ?
+// swapData
 
 
 

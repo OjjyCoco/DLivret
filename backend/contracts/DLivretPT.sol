@@ -12,7 +12,7 @@ contract DLivretPT is Ownable {
     IPMarket public market;
     address public tokenIn;
     address public PTtokenIn;
-    DLivretTicket public constant dlivretTicket = DLivretTicket(0xbF97DEfeb6a387215E3e67DFb988c675c9bb1a29);
+    DLivretTicket public constant dlivretTicket = DLivretTicket(0xaE7b7A1c6C4d859e19301ccAc2C6eD28A4C51288);
     uint16 public buyingFees = 1000;
     uint16 public sellingFees = 1000;
 
@@ -41,11 +41,11 @@ contract DLivretPT is Ownable {
         emit FeesUpdated(buyingFees, sellingFees);
     }
 
-    function buyPT(uint256 amountIn) external returns (uint256 netPtOut) {
+    function buyPT(uint256 amountTokenIn) external returns (uint256 netPtOut) {
         // Transfer tokenIn from user to contract
-        require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn), TransferFromError());
-        IERC20(tokenIn).approve(address(router), type(uint256).max);
-        uint256 amountSwaped = (amountIn * buyingFees) / 1000;
+        require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountTokenIn), TransferFromError());
+        IERC20(tokenIn).approve(address(router), amountTokenIn);
+        uint256 amountSwaped = (amountTokenIn * buyingFees) / 1000;
         (netPtOut, , ) = router.swapExactTokenForPt(
             msg.sender, // receiver
             address(market),
@@ -63,7 +63,7 @@ contract DLivretPT is Ownable {
     function sellPT(uint256 amountPtIn) external returns (uint256 netTokenOut) {
         // Transfer PT from user to contract
         require(IERC20(PTtokenIn).transferFrom(msg.sender, address(this), amountPtIn), TransferFromError());
-        IERC20(PTtokenIn).approve(address(router), type(uint256).max);
+        IERC20(PTtokenIn).approve(address(router), amountPtIn);
         uint256 amountSwaped = (amountPtIn * sellingFees) / 1000;
         (netTokenOut, , ) = router.swapExactPtForToken(
             msg.sender, // receiver

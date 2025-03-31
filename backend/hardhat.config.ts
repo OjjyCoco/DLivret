@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "dotenv/config";
+require("hardhat-gas-reporter");
 
 const ALCHEMY_MAINNET_RPC = process.env.ALCHEMY_MAINNET_RPC || ''
 
@@ -14,13 +15,19 @@ const config: HardhatUserConfig = {
       }
     }
   },
+  gasReporter: {
+    enabled: true,
+    currency: "USD",
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    L1Etherscan: process.env.ETHERSCAN_API_KEY
+  },  
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
       forking: {
         enabled: true,
         url: ALCHEMY_MAINNET_RPC,
-        blockNumber: 22166826
+        blockNumber: 22169202
       },
     }
   }

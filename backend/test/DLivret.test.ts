@@ -32,7 +32,7 @@ describe("DLivretPT Contract Tests", function () {
         return { dlivretPT, dlivretTicket, owner, user };
     }
 
-    // fixture when user is already funded with USDe and has approved DLivret contract
+    // Fixture when user is already funded with USDe and has approved DLivret contract
     async function readyToBuy(){        
         // Deploy contract and get signers
         const { dlivretPT, dlivretTicket, owner, user } = await loadFixture(deployContract);
@@ -64,7 +64,8 @@ describe("DLivretPT Contract Tests", function () {
 
     describe('setMarketAndToken', function () {
         it('Should correctly set market and token', async function () {
-            const { dlivretPT } = await loadFixture(deployContract);
+            const { dlivretPT, owner } = await loadFixture(deployContract);
+            await dlivretPT.connect(owner).setMarketAndToken("0x9Df192D13D61609D1852461c4850595e1F56E714", "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3");
             const market = await dlivretPT.market();
             const tokenIn = await dlivretPT.tokenIn();
             expect(market).to.equal("0x9Df192D13D61609D1852461c4850595e1F56E714");
