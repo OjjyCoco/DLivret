@@ -12,12 +12,19 @@ contract DLivretPT is Ownable {
     IPMarket public market;
     address public tokenIn;
     address public PTtokenIn;
-    DLivretTicket public constant dlivretTicket = DLivretTicket(0x97915c43511f8cB4Fbe7Ea03B96EEe940eC4AF12);
+    DLivretTicket public constant dlivretTicket = DLivretTicket(0xbF97DEfeb6a387215E3e67DFb988c675c9bb1a29);
+    uint16 public buyingFees = 1000;
+    uint16 public sellingFees = 1000;
 
     event BoughtPT(address sender, uint amountIn, uint netPtOut);
     event SoldPT(address sender, uint amountPtIn, uint netTokenOut);
+    event FeesUpdated(uint16 buyingFees, uint16 sellingFees);
 
     error TransferFromError();
+
+    constructor (address _market, address _tokenIn) Ownable(msg.sender) {
+        setMarketAndToken(_market, _tokenIn);
+    }
 
     function setMarketAndToken(address _market, address _tokenIn) public onlyOwner {
         require(!IPMarket(_market).isExpired(), "Market has already expired");
@@ -27,15 +34,18 @@ contract DLivretPT is Ownable {
         PTtokenIn = address(_PT); // cast to address
     }
 
-    constructor (address _market, address _tokenIn) Ownable(msg.sender) {
-        setMarketAndToken(_market, _tokenIn);
+    function setFees(uint16 _buyingFees, uint16 _sellingFees) external onlyOwner {
+        require(_buyingFees <= 1000 && _sellingFees <= 1000, "Invalid fee percentage");
+        buyingFees = _buyingFees;
+        sellingFees = _sellingFees;
+        emit FeesUpdated(buyingFees, sellingFees);
     }
 
     function buyPT(uint256 amountIn) external returns (uint256 netPtOut) {
         // Transfer tokenIn from user to contract
         require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn), TransferFromError());
         IERC20(tokenIn).approve(address(router), type(uint256).max);
-        uint256 amountSwaped = (amountIn * 997) / 1000;
+        uint256 amountSwaped = (amountIn * buyingFees) / 1000;
         (netPtOut, , ) = router.swapExactTokenForPt(
             msg.sender, // receiver
             address(market),
@@ -54,7 +64,7 @@ contract DLivretPT is Ownable {
         // Transfer PT from user to contract
         require(IERC20(PTtokenIn).transferFrom(msg.sender, address(this), amountPtIn), TransferFromError());
         IERC20(PTtokenIn).approve(address(router), type(uint256).max);
-        uint256 amountSwaped = (amountPtIn * 999) / 1000;
+        uint256 amountSwaped = (amountPtIn * sellingFees) / 1000;
         (netTokenOut, , ) = router.swapExactPtForToken(
             msg.sender, // receiver
             address(market),
@@ -67,5 +77,25 @@ contract DLivretPT is Ownable {
 
         emit SoldPT(msg.sender, amountSwaped, netTokenOut);
     }
+
+    function withdrawFunds(address token) external onlyOwner {
+        if (token == address(0)) {
+            // Withdraw all native ETH
+            uint256 balance = address(this).balance;
+            require(balance > 0, "No ETH to withdraw");
+            (bool success, ) = payable(owner()).call{value: balance}("");
+            require(success, "ETH withdrawal failed");
+        } else {
+            // Withdraw all ERC20 tokens
+            uint256 balance = IERC20(token).balanceOf(address(this));
+            require(balance > 0, "No ERC20 to withdraw");
+            require(IERC20(token).transfer(owner(), balance), "ERC20 withdrawal failed");
+        }
+    }
+
+
+    receive() external payable {}
+
+    fallback() external payable {}
 
 }

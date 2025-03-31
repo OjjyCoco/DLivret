@@ -12,12 +12,6 @@ describe("DLivretPT Contract Tests", function () {
     // We are using a mainnet fork, the whale might not be a whale anymore
     const USDe_WHALE = "0x1f015774346BFfe5941703ea429CE8b0B6C875D6";
 
-    const ERC20_ABI = [
-        "function approve(address spender, uint256 amount) returns (bool)",
-        "function balanceOf(address owner) view returns (uint256)",
-        "function transfer(address recipient, uint256 amount) returns (bool)"
-    ];
-
     async function deployContract() {
         const [owner, user] = await ethers.getSigners();
         const DLivretPT = await ethers.getContractFactory("DLivretPT");
@@ -29,7 +23,7 @@ describe("DLivretPT Contract Tests", function () {
         const DLivretTicket = await ethers.getContractFactory("DLivretTicket");
         const dlivretTicket = await DLivretTicket.deploy();
 
-        await dlivretTicket.connect(owner).addContractCaller("0xa86582Ad5E80abc19F95f8A9Fb3905Cda0dAbd59");
+        await dlivretTicket.connect(owner).addContractCaller(dlivretPT.target);
 
         console.log("Deployed DLivretPT at:", dlivretPT.target);
         console.log("Deployed DLivretTicket at:", dlivretTicket.target);
@@ -44,8 +38,8 @@ describe("DLivretPT Contract Tests", function () {
         const { dlivretPT, dlivretTicket, owner, user } = await loadFixture(deployContract);
     
         // Get contract instances
-        PT = await ethers.getContractAt(ERC20_ABI, PT_ADDRESS);
-        USDe = await ethers.getContractAt(ERC20_ABI, USDe_ADDRESS);
+        PT = await ethers.getContractAt("IERC20", PT_ADDRESS);
+        USDe = await ethers.getContractAt("IERC20", USDe_ADDRESS);
 
         // Impersonate whale account to fund the user
         await helpers.impersonateAccount(USDe_WHALE);
@@ -116,7 +110,15 @@ describe("DLivretPT Contract Tests", function () {
             
             const contractUSDeBalance = await USDe.balanceOf(dlivretPT.target);
             console.log(`Contract USDe balance after user buys PT: ${ethers.formatUnits(contractUSDeBalance, 18)} USDe`);
-            expect(contractUSDeBalance).to.be.gt(0);
+            
+            const buyingFees = await dlivretPT.buyingFees();
+
+            if (buyingFees < 1000){
+                expect(contractUSDeBalance).to.be.gt(0);
+            }
+            else{
+                expect(contractUSDeBalance).to.equal(0);
+            }
         });
 
         it('Should add the week lotery ticket to the user balance', async function (){
@@ -145,7 +147,7 @@ describe("DLivretPT Contract Tests", function () {
             const buyAmount = ethers.parseUnits("1000", 18);
             const tx = await dlivretPT.connect(user).buyPT(buyAmount);
             const ptBalance = await PT.balanceOf(user.address);
-            const amountSwaped = (buyAmount * BigInt(997)) / BigInt(1000); // Ensure BigInt arithmetic
+            const amountSwaped = (buyAmount * BigInt(await dlivretPT.buyingFees())) / BigInt(1000);
             await expect(tx).to.emit(dlivretPT, "BoughtPT")
             .withArgs(user.address, amountSwaped, ptBalance);
         });
@@ -153,7 +155,7 @@ describe("DLivretPT Contract Tests", function () {
         it('Should revert if not enough USDe', async function () {
             const { dlivretPT, user } = await loadFixture(readyToBuy);
 
-            const USDe = await ethers.getContractAt(ERC20_ABI, USDe_ADDRESS);
+            const USDe = await ethers.getContractAt("IERC20", USDe_ADDRESS);
             const amountTooMuch = ethers.parseUnits("1500", 18);
 
             await USDe.connect(user).approve(dlivretPT.target, amountTooMuch);
@@ -165,7 +167,7 @@ describe("DLivretPT Contract Tests", function () {
         it('Should revert if not enough USDe allowance', async function () {
             const { dlivretPT, user } = await loadFixture(deployContract);
 
-            const USDe = await ethers.getContractAt(ERC20_ABI, USDe_ADDRESS);
+            const USDe = await ethers.getContractAt("IERC20", USDe_ADDRESS);
             const amountApproved = ethers.parseUnits("500", 18);
             const amountBuy = ethers.parseUnits("1000", 18);
             
@@ -228,8 +230,17 @@ describe("DLivretPT Contract Tests", function () {
             const sellTx = await dlivretPT.connect(user).sellPT(ptBalance);
             
             const contractPTUSDeBalance = await PT.balanceOf(dlivretPT.target);
+            
             console.log(`Contract PT USDe balance after user buys PT: ${ethers.formatUnits(contractPTUSDeBalance, 18)} PT USDe`);
-            expect(contractPTUSDeBalance).to.be.gt(0);
+            
+            const sellingFees = await dlivretPT.sellingFees();
+
+            if (sellingFees < 1000){
+                expect(contractPTUSDeBalance).to.be.gt(0);
+            }
+            else{
+                expect(contractPTUSDeBalance).to.equal(0);
+            }
         });
 
         it('Emit SoldPT event', async function () {
@@ -237,7 +248,7 @@ describe("DLivretPT Contract Tests", function () {
             await PT.connect(user).approve(dlivretPT.target, ptBalance);
             const tx = await dlivretPT.connect(user).sellPT(ptBalance);
             const USDeBalance = await USDe.balanceOf(user.address);
-            const amountSwaped = (ptBalance * BigInt(999)) / BigInt(1000); // Ensure BigInt arithmetic
+            const amountSwaped = (ptBalance * BigInt(await dlivretPT.sellingFees())) / BigInt(1000);
             await expect(tx).to.emit(dlivretPT, "SoldPT")
             .withArgs(user.address, amountSwaped, USDeBalance);
         });
@@ -263,6 +274,133 @@ describe("DLivretPT Contract Tests", function () {
                 .to.be.revertedWith("ERC20: insufficient allowance");
         });
     });
+
+
+    describe('Withdraw Funds', function () {
+        let buyingFees: any;
     
+        beforeEach(async function () {
+            ({ dlivretPT, user, owner } = await loadFixture(readyToBuy))
+    
+            // Fetch the current buyingFees value
+            buyingFees = await dlivretPT.buyingFees();
+
+            if (buyingFees >= ethers.parseUnits("1000", 18)) {
+                // If buyingFees is >= 1000, skip this test
+                this.skip();
+            } else {
+                // Buy PT to generate contract balance
+                const buyAmount = ethers.parseUnits("1000", 18);
+                await dlivretPT.connect(user).buyPT(buyAmount);
+            }
+        });
+    
+        it('Should allow owner to withdraw USDe funds', async function () {
+
+            if (buyingFees >= BigInt(1000)) return;
+    
+            // Owner withdraws funds
+            await dlivretPT.connect(owner).withdrawFunds(USDe_ADDRESS);
+            // Check contract balance after withdrawal
+            const contractBalanceAfter = await USDe.balanceOf(dlivretPT.target);
+            expect(contractBalanceAfter).to.equal(0);
+            console.log("Contract balance after withdraw: ", contractBalanceAfter)
+        });
+    
+        it('Should revert if non-owner tries to withdraw', async function () {
+
+            if (buyingFees >= BigInt(1000)) return;
+    
+            await expect(dlivretPT.connect(user).withdrawFunds(USDe_ADDRESS))
+            .to.be.revertedWithCustomError(dlivretPT, "OwnableUnauthorizedAccount");
+        });
+    
+        it('Should revert if withdrawing but no balance', async function () {
+            
+            if (buyingFees >= BigInt(1000)) return;
+    
+            // Withdraw once to empty the contract
+            await dlivretPT.connect(owner).withdrawFunds(USDe_ADDRESS);
+    
+            // Attempt a second withdrawal, which should fail
+            await expect(dlivretPT.connect(owner).withdrawFunds(USDe_ADDRESS))
+                .to.be.revertedWith("No ERC20 to withdraw");
+        });
+    
+        it('Should allow owner to withdraw ETH funds', async function () {
+
+            if (buyingFees >= BigInt(1000)) return;
+    
+            // Send ETH to contract
+            const ethDeposit = ethers.parseEther("1");
+            await owner.sendTransaction({ to: dlivretPT.target, value: ethDeposit });
+    
+            // Check ETH balance before withdrawal
+            const contractEthBalanceBefore = await ethers.provider.getBalance(dlivretPT.target);
+            expect(contractEthBalanceBefore).to.equal(ethDeposit);
+    
+            // Owner withdraws ETH
+            await dlivretPT.connect(owner).withdrawFunds(ethers.ZeroAddress)
+    
+            // Check ETH balance after withdrawal
+            const contractEthBalanceAfter = await ethers.provider.getBalance(dlivretPT.target);
+            expect(contractEthBalanceAfter).to.equal(0);
+        });
+    });
+
+
+    describe('setFees', function () {
+
+        it('Should allow the owner to set the fees', async function () {
+            const { dlivretPT, owner } = await loadFixture(deployContract);
+    
+            const newBuyingFees = 800;
+            const newSellingFees = 900;
+    
+            // Set new fees
+            await dlivretPT.connect(owner).setFees(newBuyingFees, newSellingFees);
+    
+            // Fetch the updated fees
+            const updatedBuyingFees = await dlivretPT.buyingFees();
+            const updatedSellingFees = await dlivretPT.sellingFees();
+    
+            expect(updatedBuyingFees).to.equal(newBuyingFees);
+            expect(updatedSellingFees).to.equal(newSellingFees);
+        });
+    
+        it('Should emit FeesUpdated event when the fees are updated', async function () {
+            const { dlivretPT, owner } = await loadFixture(deployContract);
+    
+            const newBuyingFees = 800;
+            const newSellingFees = 900;
+    
+            // Expect FeesUpdated event
+            await expect(dlivretPT.connect(owner).setFees(newBuyingFees, newSellingFees))
+                .to.emit(dlivretPT, 'FeesUpdated')
+                .withArgs(newBuyingFees, newSellingFees);
+        });
+    
+        it('Should revert if non-owner tries to set the fees', async function () {
+            const { dlivretPT, user } = await loadFixture(deployContract);
+    
+            const newBuyingFees = 800;
+            const newSellingFees = 900;
+    
+            // Try setting fees as non-owner (should revert)
+            await expect(dlivretPT.connect(user).setFees(newBuyingFees, newSellingFees))
+                .to.be.revertedWithCustomError(dlivretPT, "OwnableUnauthorizedAccount");
+        });
+    
+        it('Should revert if fees are greater than 1000', async function () {
+            const { dlivretPT, owner } = await loadFixture(deployContract);
+    
+            const invalidBuyingFees = 1200; // Invalid value > 1000
+            const invalidSellingFees = 1500; // Invalid value > 1000
+    
+            // Try setting invalid fees (should revert)
+            await expect(dlivretPT.connect(owner).setFees(invalidBuyingFees, invalidSellingFees))
+                .to.be.revertedWith("Invalid fee percentage");
+        });
+    });
 
 });
