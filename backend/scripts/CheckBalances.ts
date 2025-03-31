@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 // USDe contract address on the local Hardhat fork (update if necessary)
 const USDeAddress = "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"; // USDe Token Address
 const PTUSDeAddress = "0x917459337CaAC939D41d7493B3999f571D20D667";
-const ticketAddress = "0xa86582Ad5E80abc19F95f8A9Fb3905Cda0dAbd59";
+const ticketAddress = "0x039d7496e432c6Aea4c24648a59318b3cbe09942";
 
 async function main() {
   // List of addresses to check balances for

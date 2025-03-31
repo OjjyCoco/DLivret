@@ -8,7 +8,10 @@ import { useState, useEffect } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 
 // contract
-import { contractAddress, contractAbi } from "@/constants";
+import { contractAddress, contractAbi } from "@/constants/DLivretPTContract";
+
+// approve function
+import { approveDLivretPT } from "./ApproveDLivretPT";
 
 const ContractTest: React.FC = () => {
 
@@ -35,8 +38,21 @@ const ContractTest: React.FC = () => {
         })    
       }
 
+      const approveAndBuyPT = async () => {
+        try {
+          await approveDLivretPT();
+          await buyPT();
+        } catch (error) {
+          console.error("Error during approval or purchase:", error);
+        }
+      };
+
     return (
+      <>
+        <Button variant="outline" disabled={writeIsPending} onClick={approveDLivretPT}>approveDLivretPT</Button>
         <Button variant="outline" disabled={writeIsPending} onClick={buyPT}>Buy PT USDe</Button>
+        <Button variant="outline" disabled={writeIsPending} onClick={approveAndBuyPT}>Both</Button>
+      </>
     );
 };
 

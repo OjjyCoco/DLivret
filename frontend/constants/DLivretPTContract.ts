@@ -1,5 +1,5 @@
 // Contient les éléments du contract
-export const contractAddress="0x97915c43511f8cB4Fbe7Ea03B96EEe940eC4AF12"; //local
+export const contractAddress="0xbF97DEfeb6a387215E3e67DFb988c675c9bb1a29"; //local
 export const contractAbi=[
   {
     "inputs": [
@@ -73,6 +73,25 @@ export const contractAbi=[
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "buyingFees",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "sellingFees",
+        "type": "uint16"
+      }
+    ],
+    "name": "FeesUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -114,6 +133,10 @@ export const contractAbi=[
     "type": "event"
   },
   {
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
     "inputs": [],
     "name": "PTtokenIn",
     "outputs": [
@@ -143,6 +166,19 @@ export const contractAbi=[
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "buyingFees",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -224,6 +260,37 @@ export const contractAbi=[
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "sellingFees",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_buyingFees",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_sellingFees",
+        "type": "uint16"
+      }
+    ],
+    "name": "setFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -266,5 +333,22 @@ export const contractAbi=[
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawFunds",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

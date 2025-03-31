@@ -9,7 +9,7 @@ import { ethers } from "hardhat";
     const signer = await ethers.getSigner(USER); // Your address
 
     // Approve your deployed DLivretPT contract (replace with actual deployed address)
-    const dlivretPTAddress = "0x97915c43511f8cB4Fbe7Ea03B96EEe940eC4AF12"; // DLivretPT address
+    const dlivretPTAddress = "0xbF97DEfeb6a387215E3e67DFb988c675c9bb1a29"; // DLivretPT address
     const unlimitedApproval = ethers.MaxUint256; // Approve unlimited amount
 
     const tx = await usde.connect(signer).approve(dlivretPTAddress, unlimitedApproval);

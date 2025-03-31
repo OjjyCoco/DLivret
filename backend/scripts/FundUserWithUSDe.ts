@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 
 const USDe_ADDRESS = "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"; // USDe token
 const WHALE_ADDRESS = "0x1f015774346BFfe5941703ea429CE8b0B6C875D6"; // Adresse qui détient beaucoup de USDe sur le Mainnet
-const USER = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"; // Adresse générée par Hardhat
+const USER = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"; // Adresse générée par Hardhat
 
 async function main() {
     // Impersonate the whale account
