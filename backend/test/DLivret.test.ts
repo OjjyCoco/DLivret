@@ -41,6 +41,9 @@ describe("DLivretPT Contract Tests", function () {
         PT = await ethers.getContractAt("IERC20", PT_ADDRESS);
         USDe = await ethers.getContractAt("IERC20", USDe_ADDRESS);
 
+        console.log("PT at:", PT.target);
+        console.log("USDe at:", USDe.target);
+
         // Impersonate whale account to fund the user
         await helpers.impersonateAccount(USDe_WHALE);
         const whaleSigner = await ethers.getSigner(USDe_WHALE);

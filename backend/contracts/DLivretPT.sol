@@ -12,7 +12,7 @@ contract DLivretPT is Ownable {
     IPMarket public market;
     address public tokenIn;
     address public PTtokenIn;
-    DLivretTicket public constant dlivretTicket = DLivretTicket(0xaE7b7A1c6C4d859e19301ccAc2C6eD28A4C51288);
+    DLivretTicket public constant dlivretTicket = DLivretTicket(0xeA2e668d430e5AA15babA2f5c5edfd4F9Ef6EB73);
     uint16 public buyingFees = 1000;
     uint16 public sellingFees = 1000;
 
