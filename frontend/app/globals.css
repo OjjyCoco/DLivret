@@ -7,11 +7,11 @@
 }
 
 .navbar {
-  @apply flex-between p-5 max-w-[calc(0.8*100%)] w-full mx-auto;
+  @apply flex-between p-5 max-w-[calc(0.9*100%)] w-full mx-auto;
 }
 
 .main {
-  @apply p-10 grow max-w-[calc(0.8*100%)] w-full mx-auto py-8;
+  @apply p-10 grow max-w-[calc(0.9*100%)] w-full mx-auto py-8;
 }
 
 .footer {

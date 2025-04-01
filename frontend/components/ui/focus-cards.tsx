@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import ApproveButton from "@/components/shared/ApproveButton"
 
 export const Card = React.memo(
   ({
@@ -29,34 +30,41 @@ export const Card = React.memo(
       </div>
       {/* Conditionally render content only in the middle card (index 0, 1, 2) */}
       {index === 0 && (
-        <div className="text-xl md:text-2xl font-semibold text-white space-y-4">
-          <h2 className="text-3xl font-bold">Commencez par acheter de l'USDe</h2>
-          <p className="text-lg">Rendez-vous sur le site du stable coin USDe ci-dessous pour en acheter</p>
-          <a
-            href="https://app.ethena.fi/swap"
-            className="text-indigo-200 hover:underline text-lg"
-          >
-            Lien USDe
-          </a>
-        </div>
+        <div className="flex flex-col items-center text-center text-white gap-6 relative">
+        <h2 className="text-4xl md:text-5xl font-extrabold mt-12">Achetez de l'USDe</h2>
+        <p className="text-lg md:text-xl max-w-lg">
+          Rendez-vous sur le site du stablecoin USDe ci-dessous pour en acheter.
+        </p>
+        <a
+          href="https://app.ethena.fi/swap"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-indigo-300 hover:text-indigo-400 text-lg md:text-xl font-medium transition duration-300"
+        >
+          ➜ Acheter de l'USDe
+        </a>
+        </div>      
       )}
 
       {index === 1 && (
-        <div className="text-xl md:text-2xl font-semibold text-white space-y-4">
-          <h2 className="text-3xl font-bold">Autorisez DLivret à utiliser vos fonds pour investissement</h2>
-          <Button variant="outline" className="text-indigo-700 border-white">
-            approveDLivretPT
-          </Button>
-        </div>
+        <div className="flex flex-col items-center text-center text-white gap-6 relative">
+          <h2 className="text-4xl md:text-5xl font-extrabold mt-12">
+            Autorisez DLivret à utiliser vos fonds
+          </h2>
+          <p className="text-lg md:text-xl max-w-lg">
+            Confirmez l'autorisation pour permettre l'investissement sécurisé de vos fonds.
+          </p>
+          <ApproveButton />
+        </div>      
       )}
 
       {index === 2 && (
         <div className="text-xl md:text-2xl font-semibold text-white space-y-4">
-          <h2 className="text-3xl font-bold">Choisissez le montant à investir et swappez vos USDe pour vos PT USDe !</h2>
+          <p className="text-lg font-bold">Choisissez le montant à investir et swappez vos USDe pour vos PT USDe !</p>
           <Button variant="outline" className="text-indigo-700 border-white">
             Acheter des PT USDe
           </Button>
-          <h2 className="text-3xl font-bold">Quand vous serez prêt pour vendre vos PT, revenez sur cette carte pour demander vos USDe</h2>
+          <h2 className="text-2xl font-bold">Quand vous serez prêt pour vendre vos PT, revenez sur cette carte pour demander vos USDe</h2>
           <Button variant="outline" className="text-indigo-700 border-white">
             Vendre mes PT USDe
           </Button>

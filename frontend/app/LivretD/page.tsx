@@ -38,7 +38,7 @@ export default function LivretD() {
             words="En savoir plus sur le Livret DeFi"
             className="text-4xl md:text-6xl top-16 md:top-20 z-0"
         />
-        <h1>Des Explications ici</h1>
+        <h1>Des explications ici</h1>
         </div>
     </>
   );

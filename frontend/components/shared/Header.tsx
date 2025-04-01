@@ -29,17 +29,17 @@ import {
 const Header: React.FC = () => {
     return (
         <nav className="navbar">
-            <Image
-            className="dark:invert"
-            src="/LogoNoir.svg"
-            alt="Livret+ logomark"
-            width={200}
-            // height is useless but necessary
-            height={1}
-            />
+            <Link href="/">
+                <Image
+                    className="dark:invert cursor-pointer"
+                    src="/LogoNoir.svg"
+                    alt="Livret+ logomark"
+                    width={200}
+                    height={1} // Necessary but unused
+                />
+            </Link>
             <NavigationMenu>
             <NavigationMenuList className="space-x-4">
-                {/* Comment investir */}
                 <NavigationMenuItem>
                 <Link href="/docs" legacyBehavior passHref>
                     <NavigationMenuLink
@@ -56,19 +56,17 @@ const Header: React.FC = () => {
                     Livrets
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                    <div className="grid gap-5 p-6 md:w-[450px] lg:w-[550px] lg:grid-cols-[1fr_1.5fr] bg-white shadow-xl rounded-xl border border-gray-200">
-                        {/* DAO Section - Prend toute la hauteur */}
+                    <div className="grid gap-5 p-6 md:w-[450px] lg:w-[550px] lg:grid-cols-[1fr_1.5fr] bg-white shadow-xl rounded-xl">
                         <div className="flex flex-col justify-between row-span-full">
                             <NavigationMenuLink asChild>
-                                <a
-                                    className="flex h-full w-full flex-col justify-end rounded-lg bg-gradient-to-b from-gray-100 to-gray-50 p-6 transition hover:shadow-md focus:shadow-lg"
-                                    href="/"
+                                <div
+                                    className="flex h-full w-full flex-col justify-end rounded-lg bg-gradient-to-b from-gray-100 to-gray-50 p-6 transition focus:shadow-lg"
                                 >
                                     <div className="mb-2 mt-4 text-lg font-semibold text-gray-900">DLivret</div>
                                     <p className="text-sm text-gray-600 leading-tight">
                                         Découvez les différentes stratégies de placement disponibles sur DLivret.
                                     </p>
-                                </a>
+                                </div>
                             </NavigationMenuLink>
                         </div>
 
