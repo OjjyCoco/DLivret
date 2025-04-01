@@ -64,9 +64,9 @@ const Header: React.FC = () => {
                                     className="flex h-full w-full flex-col justify-end rounded-lg bg-gradient-to-b from-gray-100 to-gray-50 p-6 transition hover:shadow-md focus:shadow-lg"
                                     href="/"
                                 >
-                                    <div className="mb-2 mt-4 text-lg font-semibold text-gray-900">DAO</div>
+                                    <div className="mb-2 mt-4 text-lg font-semibold text-gray-900">DLivret</div>
                                     <p className="text-sm text-gray-600 leading-tight">
-                                        Découvrez les protocoles DAO et leur fonctionnement.
+                                        Découvez les différentes stratégies de placement disponibles sur DLivret.
                                     </p>
                                 </a>
                             </NavigationMenuLink>
@@ -75,10 +75,11 @@ const Header: React.FC = () => {
                         {/* Livrets - Bien alignés en colonne */}
                         <div className="flex flex-col space-y-3">
                             {[
-                                { href: "/docs", title: "Livret Alpha", description: "Taux compétitif et sécurisé." },
-                                { href: "/docs", title: "Livret B", description: "Un placement flexible et rentable." },
-                                { href: "/docs", title: "Livret C", description: "Idéal pour une épargne stable." },
-                                { href: "/LivretD", title: "Livret DeFi", description: "Profitez des opportunités blockchain." },
+                                { href: "/", title: "Livret Alpha", description: "Pour tester DLivret sans investir." },
+                                { href: "/", title: "Livret B", description: " Pour s'exposer au Bitcoin." },
+                                { href: "/", title: "Livret C", description: " Cryptos : Pour s'exposer à un panier de Cryptos." },
+                                { href: "/LivretD", title: "Livret D", description: "DeFi : Pour bénéficier des rendements supérieurs de la DeFi." },
+                                { href: "/", title: "Livret E", description: "Euro : Pour obtenir des rendements supérieurs sur l'Euro." },
                             ].map(({ href, title, description }) => (
                                 <Link key={title} href={href} className="block p-3 transition hover:bg-gray-100 rounded-lg">
                                     <strong className="text-gray-900">{title}</strong>
