@@ -19,7 +19,7 @@ const config: HardhatUserConfig = {
     enabled: true,
     currency: "USD",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
-    L1Etherscan: process.env.ETHERSCAN_API_KEY
+    // L1Etherscan: process.env.ETHERSCAN_API_KEY
   },  
   defaultNetwork: "hardhat",
   networks: {
