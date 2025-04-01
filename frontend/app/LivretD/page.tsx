@@ -4,9 +4,7 @@ import ContractTest from "@/components/shared/ContractTest";
 export default function Home() {
   return (
     <>
-      <p>Home Page</p>
-      <p>Boutons de test : </p>
-      <ContractTest />
+      <p>Livret DeFi</p>
     </>
   );
 }
