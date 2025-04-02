@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 // header and footer
 import Footer from "@/components/shared/Footer"
@@ -50,6 +51,7 @@ export default function RootLayout({
                 <main className="main">
                   {children}
                 </main>
+                <Toaster />
               <Footer />
             </div>
           </ThemeProvider>
