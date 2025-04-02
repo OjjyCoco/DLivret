@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import ApproveButton from "@/components/shared/ApproveButton"
+import SwapComponent from "../shared/Swap";
 
 export const Card = React.memo(
   ({
@@ -60,14 +61,8 @@ export const Card = React.memo(
 
       {index === 2 && (
         <div className="text-xl md:text-2xl font-semibold text-white space-y-4">
-          <p className="text-lg font-bold">Choisissez le montant à investir et swappez vos USDe pour vos PT USDe !</p>
-          <Button variant="outline" className="text-indigo-700 border-white">
-            Acheter des PT USDe
-          </Button>
-          <h2 className="text-2xl font-bold">Quand vous serez prêt pour vendre vos PT, revenez sur cette carte pour demander vos USDe</h2>
-          <Button variant="outline" className="text-indigo-700 border-white">
-            Vendre mes PT USDe
-          </Button>
+          <p className="text-lg font-bold">C'est le moment de convertir vos USDe en actif à rendement !</p>
+          <SwapComponent/>
         </div>
         
       )}

@@ -1,5 +1,5 @@
 // Contient les éléments du contract
-export const contractAddress="0xbF97DEfeb6a387215E3e67DFb988c675c9bb1a29"; //local
+export const contractAddress="0xeA2e668d430e5AA15babA2f5c5edfd4F9Ef6EB73"; //local
 export const contractAbi=[
   {
     "inputs": [
@@ -153,7 +153,7 @@ export const contractAbi=[
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "amountIn",
+        "name": "amountTokenIn",
         "type": "uint256"
       }
     ],

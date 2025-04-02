@@ -3,6 +3,7 @@ import ContractTest from "@/components/shared/ContractTest";
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { FocusCards } from "@/components/ui/focus-cards";
+import SwapComponent from "@/components/shared/Swap";
 
 export default function LivretD() {
 
