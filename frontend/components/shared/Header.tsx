@@ -74,9 +74,9 @@ const Header: React.FC = () => {
                         <div className="flex flex-col space-y-3">
                             {[
                                 { href: "/", title: "Livret Alpha", description: "Pour tester DLivret sans investir." },
-                                { href: "/", title: "Livret B", description: " Pour s'exposer au Bitcoin." },
-                                { href: "/", title: "Livret C", description: " Cryptos : Pour s'exposer à un panier de Cryptos." },
-                                { href: "/LivretD", title: "Livret D", description: "DeFi : Pour bénéficier des rendements supérieurs de la DeFi." },
+                                { href: "/", title: "Livret B", description: "Pour s'exposer au Bitcoin." },
+                                { href: "/", title: "Livret C", description: "Cryptos : Pour s'exposer à un panier de Cryptos." },
+                                { href: "/LivretD", title: "Livret D", description: "DeFi : Pour bénéficier des rendements supérieurs de la finance décentralisée." },
                                 { href: "/", title: "Livret E", description: "Euro : Pour obtenir des rendements supérieurs sur l'Euro." },
                             ].map(({ href, title, description }) => (
                                 <Link key={title} href={href} className="block p-3 transition hover:bg-gray-100 rounded-lg">

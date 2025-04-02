@@ -21,7 +21,7 @@ export const Card = React.memo(
       onMouseEnter={() => setHovered(index)}
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        "rounded-xl relative bg-gradient-to-br from-[#1F2937] to-[#4B5563] p-6 overflow-hidden h-[800px] md:h-[700px] w-full transition-all duration-500 ease-out transform hover:scale-105 shadow-lg hover:shadow-2xl",
+        "rounded-xl relative bg-gradient-to-br from-[#1F2937] to-[#4B5563] p-6 overflow-hidden h-[800px] md:h-[800px] w-full transition-all duration-500 ease-out transform hover:scale-105 shadow-lg hover:shadow-2xl",
         hovered !== null && hovered !== index && "blur-sm scale-[0.98]"
       )}
     >
@@ -53,7 +53,7 @@ export const Card = React.memo(
             Autorisez DLivret à utiliser vos fonds
           </h2>
           <p className="text-lg md:text-xl max-w-lg">
-            Confirmez l'autorisation pour permettre l'investissement sécurisé de vos fonds.
+            Confirmez les autorisations pour permettre l'investissement sécurisé de vos fonds.
           </p>
           <ApproveButton />
         </div>      
