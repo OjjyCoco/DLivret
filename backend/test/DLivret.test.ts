@@ -189,7 +189,7 @@ describe("DLivretPT Contract Tests", function () {
         // Buying PT USDe
         beforeEach(async function () {
             // Deploy contract and get signers
-            ({ dlivretPT, user } = await loadFixture(readyToBuy));
+            ({ dlivretPT, dlivretTicket, user } = await loadFixture(readyToBuy));
 
             const transferAmount = ethers.parseUnits("1000", 18);
             await dlivretPT.connect(user).buyPT(transferAmount);
@@ -221,6 +221,30 @@ describe("DLivretPT Contract Tests", function () {
             console.log(`User USDe balance after selling PT: ${ethers.formatUnits(usdeBalanceAfter, 18)} USDe`);
     
             expect(usdeBalanceAfter).to.be.gt(0);
+        });
+
+
+        it('Should add the week lotery ticket to the user balance', async function (){
+            const sellAmount = ethers.parseUnits("100", 18);
+
+            // Approve PT transfer
+            await PT.connect(user).approve(dlivretPT.target, sellAmount);
+
+            // User sells PT
+            await dlivretPT.connect(user).sellPT(sellAmount);
+            // await dlivretPT.connect(user).sellPT(sellAmount);
+
+            // Get current block timestamp
+            const latestBlock = await ethers.provider.getBlock('latest');
+            const blockTimestamp = latestBlock.timestamp;
+
+            // Calculate expected ticket ID (weekly)
+            const expectedTicketId = Math.floor(blockTimestamp / (7 * 24 * 60 * 60));
+
+            const userTicketBalance = await dlivretTicket.balanceOf(user.address, expectedTicketId);
+            console.log("userTicketBalance: ", userTicketBalance)
+            expect(userTicketBalance).to.equal(1);
+
         });
 
         it('Should increase the contract PT USDe balance', async function () {

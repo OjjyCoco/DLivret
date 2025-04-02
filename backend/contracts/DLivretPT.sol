@@ -13,8 +13,8 @@ contract DLivretPT is Ownable {
     address public tokenIn;
     address public PTtokenIn;
     DLivretTicket public constant dlivretTicket = DLivretTicket(0xeA2e668d430e5AA15babA2f5c5edfd4F9Ef6EB73);
-    uint16 public buyingFees = 1000;
-    uint16 public sellingFees = 1000;
+    uint16 public buyingFees = 999;
+    uint16 public sellingFees = 999;
 
     event BoughtPT(address sender, uint amountIn, uint netPtOut);
     event SoldPT(address sender, uint amountPtIn, uint netTokenOut);
@@ -73,7 +73,7 @@ contract DLivretPT is Ownable {
             createEmptyLimitOrderData()
         );
 
-        // DLivretTicket(ticketContract).mintTicket(user);
+        dlivretTicket.mintTicket(msg.sender);
 
         emit SoldPT(msg.sender, amountSwaped, netTokenOut);
     }

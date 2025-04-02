@@ -10,7 +10,7 @@ change DLivretTicket address in ...
 
 2. npx hardhat ignition deploy ignition/modules/DLivretPT.ts --network localhost
 
-change DLivretPT address in ...
+change DLivretPT address in the following scripts
 
 3. npx hardhat run scripts/AddContractCaller.ts --network localhost
 
