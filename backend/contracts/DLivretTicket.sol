@@ -10,7 +10,7 @@ contract DLivretTicket is ERC1155, Ownable {
 
     event TicketMinted(address indexed user, uint256 indexed ticketId, uint256 amount);
     event TicketBurned(address indexed user, uint256 indexed ticketId, uint256 amount);
-    event CallerContractCAdded(address indexed callerContract);
+    event CallerContractAdded(address indexed callerContract);
     event CallerContractRemoved(address indexed callerContract);
 
     constructor() ERC1155("") Ownable(msg.sender) {
@@ -24,7 +24,7 @@ contract DLivretTicket is ERC1155, Ownable {
 
     function addContractCaller(address _callerContract) external onlyOwner {
         allowedCallerContracts[_callerContract] = true;
-        emit CallerContractCAdded(_callerContract);
+        emit CallerContractAdded(_callerContract);
     }
 
     function removeContractCaller(address _callerContract) external onlyOwner {
@@ -43,13 +43,13 @@ contract DLivretTicket is ERC1155, Ownable {
         emit TicketMinted(user, ticketId, 1);
     }
 
-    function burnTicket(address user, uint256 value) external onlyCallerContract {
-        // Lotery contract might be an authorized caller (it might also be the only caller in the Dlivret DApp)
-        uint256 ticketId = getCurrentTicketId();
-        _burn(user, ticketId, value);
+    // Lotery contract might be an authorized caller (it might also be the only caller in the Dlivret DApp)
+    // function burnTicket(address user, uint256 value) external onlyCallerContract {
+    //     uint256 ticketId = getCurrentTicketId();
+    //     _burn(user, ticketId, value);
 
-        emit TicketBurned(user, ticketId, value);
-    }
+    //     emit TicketBurned(user, ticketId, value);
+    // }
 
     function safeTransferFrom(
         address from,

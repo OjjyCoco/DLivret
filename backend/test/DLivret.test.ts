@@ -58,7 +58,7 @@ describe("DLivretPT Contract Tests", function () {
         return { dlivretPT, dlivretTicket, owner, user };
     }
 
-    describe('Deployment', function () {
+    describe('Deployment DLivretPT', function () {
         it('Should deploy the SC', async function () {
             const { dlivretPT } = await loadFixture(deployContract);
             expect(dlivretPT.address).to.not.be.null;
@@ -432,3 +432,119 @@ describe("DLivretPT Contract Tests", function () {
     });
 
 });
+
+describe("DLivretTicket Contract Tests", function () {
+    let owner: any, user1: any, user2: any;
+    let DLivretTicket, dlivretTicket: any;
+
+    async function deployDLivretTicketContract() {
+        const [owner, user1, user2] = await ethers.getSigners();
+
+        const DLivretPT = await ethers.getContractFactory("DLivretPT");
+        const dlivretPT = await DLivretPT.deploy(
+            "0x9Df192D13D61609D1852461c4850595e1F56E714", // USDe Pendle Market address
+            "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"  // USDe token address
+        );
+        
+        const DLivretTicket = await ethers.getContractFactory("DLivretTicket");
+        const dlivretTicket = await DLivretTicket.deploy();
+        // Let's say user1 is part of allowedCallerContracts to do simple
+        await dlivretTicket.connect(owner).addContractCaller(user1.address);
+
+        return { dlivretPT, dlivretTicket, owner, user1, user2 };
+    }
+
+    describe("Deployment DLivretTicket", function () {
+        it("Should deploy correctly and set the owner", async function () {
+            const { dlivretTicket, owner } = await loadFixture(deployDLivretTicketContract);
+            expect(await dlivretTicket.owner()).to.equal(owner.address);
+        });
+    });
+
+    describe("addContractCaller and removeContractCaller", function () {
+        it("Should allow owner to add a contract caller", async function () {
+            const { dlivretTicket, owner, user2 } = await loadFixture(deployDLivretTicketContract);
+            await expect(dlivretTicket.connect(owner).addContractCaller(user2.address))
+                .to.emit(dlivretTicket, "CallerContractAdded")
+                .withArgs(user2.address);
+            await expect(await dlivretTicket.allowedCallerContracts(user2.address)).to.be.true;
+        });
+
+        it("Should allow owner to remove a contract caller", async function () {
+            const { dlivretTicket, owner, user1 } = await loadFixture(deployDLivretTicketContract);
+            await dlivretTicket.connect(owner).addContractCaller(user1.address)
+            await expect(dlivretTicket.connect(owner).removeContractCaller(user1.address))
+                .to.emit(dlivretTicket, "CallerContractRemoved")
+                .withArgs(user1.address);
+            expect(await dlivretTicket.allowedCallerContracts(user1.address)).to.be.false;
+        });
+
+        it("Should revert if not the owner on addContractCaller", async function () {
+            const { dlivretTicket, user1, user2 } = await loadFixture(deployDLivretTicketContract);
+            await expect(dlivretTicket.connect(user1).addContractCaller(user2.address))
+                .to.be.revertedWithCustomError(dlivretTicket, "OwnableUnauthorizedAccount");
+        });
+        
+        it("Should revert if not the owner on removeContractCaller", async function () {
+            const { dlivretTicket, user1, user2, owner } = await loadFixture(deployDLivretTicketContract);
+            await dlivretTicket.connect(owner).addContractCaller(user2.address);
+            await expect(dlivretTicket.connect(user1).removeContractCaller(user2.address))
+                .to.be.revertedWithCustomError(dlivretTicket, "OwnableUnauthorizedAccount");
+        });
+    });
+
+    describe("Minting Tickets", function () {
+        it("Should allow caller contract to mint tickets", async function () {
+            const { dlivretTicket, user1 } = await loadFixture(deployDLivretTicketContract);
+
+             // Calculate expected ticket ID (weekly)
+             const latestBlock = await ethers.provider.getBlock('latest');
+             const blockTimestamp = latestBlock.timestamp;
+             const expectedTicketId = Math.floor(blockTimestamp / (7 * 24 * 60 * 60));
+
+            const minting = dlivretTicket.connect(user1).mintTicket(user1.address);
+            await expect(minting).to.emit(dlivretTicket, "TicketMinted").withArgs(user1.address, expectedTicketId, 1);
+            const balance = await dlivretTicket.balanceOf(user1.address, expectedTicketId);
+            await expect(balance).to.equal(1);
+        });
+
+        it("Should revert if non-caller contract tries to mint", async function () {
+            const { dlivretTicket, user2 } = await loadFixture(deployDLivretTicketContract);
+            const minting = dlivretTicket.connect(user2).mintTicket(user2.address)
+            await expect(minting).to.be.revertedWith("Not an authorized caller contract");
+        });
+    });
+
+    describe("Transferring Tickets", function () {
+        beforeEach(async function () {
+            const { dlivretTicket, owner, user1 } = await loadFixture(deployDLivretTicketContract);
+            await dlivretTicket.connect(owner).addContractCaller(user1.address)
+            await dlivretTicket.connect(user1).mintTicket(user1.address);
+        });
+
+        it("Should not allow safeTransferFrom tickets", async function () {
+            const { dlivretTicket, user1, user2 } = await loadFixture(deployDLivretTicketContract);
+            // Calculate expected ticket ID (weekly)
+            const latestBlock = await ethers.provider.getBlock('latest');
+            const blockTimestamp = latestBlock.timestamp;
+            const expectedTicketId = Math.floor(blockTimestamp / (7 * 24 * 60 * 60));
+            await expect(
+                dlivretTicket.connect(user1).safeTransferFrom(user1.address, user2.address, expectedTicketId, 1, "0x")
+            ).to.be.revertedWith("Transfers disabled");
+        });
+
+        it("Should not allow safeBatchTransferFrom tickets", async function () {
+            const { dlivretTicket, user1, user2 } = await loadFixture(deployDLivretTicketContract);
+            // Calculate expected ticket ID (weekly)
+            const latestBlock = await ethers.provider.getBlock('latest');
+            const blockTimestamp = latestBlock.timestamp;
+            const expectedTicketId = Math.floor(blockTimestamp / (7 * 24 * 60 * 60));
+            await expect(
+                dlivretTicket.connect(user1).safeBatchTransferFrom(user1.address, user2.address, [expectedTicketId], [1], "0x")
+            ).to.be.revertedWith("Transfers disabled");
+        });
+
+    });
+
+});
+

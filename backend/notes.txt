@@ -1,5 +1,12 @@
-// opti / sécu - gaz
-// déploiement mainnet, cher ?
+
+TDL
+opti / sécu - gaz
+tests tickets
+carnet de proj
+natspec
+
+déploiement sepo
+README
 // swapData
 
 
