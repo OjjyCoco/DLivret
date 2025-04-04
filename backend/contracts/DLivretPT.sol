@@ -8,13 +8,14 @@ import "@openzeppelin/contracts/access/Ownable.sol"; // ^0.8.20
 import "./DLivretTicket.sol"; // 0.8.28
 
 contract DLivretPT is Ownable {
-    IPAllActionV3 public constant router = IPAllActionV3(0x888888888889758F76e7103c6CbF23ABbF58F946);
     IPMarket public market;
     address public tokenIn;
     address public PTtokenIn;
-    DLivretTicket public constant dlivretTicket = DLivretTicket(0xeA2e668d430e5AA15babA2f5c5edfd4F9Ef6EB73);
     uint16 public buyingFees = 999;
     uint16 public sellingFees = 999;
+    uint224 private _padding;
+    IPAllActionV3 public constant router = IPAllActionV3(0x888888888889758F76e7103c6CbF23ABbF58F946);
+    DLivretTicket public constant dlivretTicket = DLivretTicket(0xeA2e668d430e5AA15babA2f5c5edfd4F9Ef6EB73);
 
     event BoughtPT(address sender, uint amountIn, uint netPtOut);
     event SoldPT(address sender, uint amountPtIn, uint netTokenOut);
@@ -32,6 +33,9 @@ contract DLivretPT is Ownable {
         tokenIn = _tokenIn;
         ( , IPPrincipalToken _PT, ) = market.readTokens();
         PTtokenIn = address(_PT); // cast to address
+
+        IERC20(tokenIn).approve(address(router), type(uint256).max);
+        IERC20(PTtokenIn).approve(address(router), type(uint256).max);
     }
 
     function setFees(uint16 _buyingFees, uint16 _sellingFees) external onlyOwner {
@@ -44,14 +48,13 @@ contract DLivretPT is Ownable {
     function buyPT(uint256 amountTokenIn) external returns (uint256 netPtOut) {
         // Transfer tokenIn from user to contract
         require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountTokenIn), TransferFromError());
-        IERC20(tokenIn).approve(address(router), amountTokenIn);
         uint256 amountSwaped = (amountTokenIn * buyingFees) / 1000;
         (netPtOut, , ) = router.swapExactTokenForPt(
             msg.sender, // receiver
             address(market),
             amountSwaped, // minPtOut * input fees
             createDefaultApproxParams(),
-            createTokenInputSimple(tokenIn, amountSwaped), // we take 0.03% input fees
+            createTokenInputSimple(tokenIn, amountSwaped),
             createEmptyLimitOrderData()
         );
 
@@ -63,7 +66,6 @@ contract DLivretPT is Ownable {
     function sellPT(uint256 amountPtIn) external returns (uint256 netTokenOut) {
         // Transfer PT from user to contract
         require(IERC20(PTtokenIn).transferFrom(msg.sender, address(this), amountPtIn), TransferFromError());
-        IERC20(PTtokenIn).approve(address(router), amountPtIn);
         uint256 amountSwaped = (amountPtIn * sellingFees) / 1000;
         (netTokenOut, , ) = router.swapExactPtForToken(
             msg.sender, // receiver

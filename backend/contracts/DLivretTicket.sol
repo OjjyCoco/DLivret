@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract DLivretTicket is ERC1155, Ownable {
     mapping(address => bool) public allowedCallerContracts; // Store multiple caller contracts
 
-    event TicketMinted(address indexed user, uint256 indexed ticketId, uint256 amount);
-    event TicketBurned(address indexed user, uint256 indexed ticketId, uint256 amount);
-    event CallerContractAdded(address indexed callerContract);
-    event CallerContractRemoved(address indexed callerContract);
+    event TicketMinted(address user, uint256 ticketId, uint256 amount);
+    event TicketBurned(address user, uint256 ticketId, uint256 amount);
+    event CallerContractAdded(address callerContract);
+    event CallerContractRemoved(address callerContract);
 
     constructor() ERC1155("") Ownable(msg.sender) {
 
