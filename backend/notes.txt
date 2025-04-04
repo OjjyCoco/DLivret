@@ -1,9 +1,6 @@
 
 TDL
-opti / sécu - gaz
-tests tickets
 carnet de proj
-natspec
 
 déploiement sepo
 README

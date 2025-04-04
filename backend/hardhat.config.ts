@@ -4,6 +4,8 @@ import "dotenv/config";
 require("hardhat-gas-reporter");
 
 const ALCHEMY_MAINNET_RPC = process.env.ALCHEMY_MAINNET_RPC || ''
+const ALCHEMY_SEPOLIA_RPC = process.env.ALCHEMY_SEPOLIA_RPC || ''
+const SEPOLIA_ACC_PRIVATE_KEY = process.env.SEPOLIA_ACC_PRIVATE_KEY || ''
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -29,7 +31,13 @@ const config: HardhatUserConfig = {
         url: ALCHEMY_MAINNET_RPC,
         blockNumber: 22180761
       },
-    }
+    },
+    // sepolia: {
+    //   url: ALCHEMY_SEPOLIA_RPC,
+    //   accounts: [`0x${ALCHEMY_SEPOLIA_RPC}`],
+    //   chainId: 11155111,
+    //   // blockConfirmations: 6,
+    // },
   }
 };
 
