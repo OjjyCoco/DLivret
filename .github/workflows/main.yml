@@ -21,6 +21,8 @@ jobs:
           echo ALCHEMY_MAINNET_RPC=${{ secrets.ALCHEMY_MAINNET_RPC }} >> .env
           echo COINMARKETCAP_API_KEY=${{ secrets.COINMARKETCAP_API_KEY }} >> .env
           echo ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }} >> .env
+          echo ALCHEMY_SEPOLIA_RPC=${{ secrets.ALCHEMY_SEPOLIA_RPC }} >> .env
+          echo SEPOLIA_ACC_PRIVATE_KEY=${{ secrets.SEPOLIA_ACC_PRIVATE_KEY }} >> .env
 
       - name: Use Node.js 20.11.1
         uses: actions/setup-node@v1

@@ -32,12 +32,12 @@ const config: HardhatUserConfig = {
         blockNumber: 22180761
       },
     },
-    // sepolia: {
-    //   url: ALCHEMY_SEPOLIA_RPC,
-    //   accounts: [`0x${ALCHEMY_SEPOLIA_RPC}`],
-    //   chainId: 11155111,
-    //   // blockConfirmations: 6,
-    // },
+    sepolia: {
+      url: ALCHEMY_SEPOLIA_RPC,
+      accounts: [`0x${SEPOLIA_ACC_PRIVATE_KEY}`],
+      chainId: 11155111,
+      // blockConfirmations: 6,
+    },
   }
 };
 
