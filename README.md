@@ -55,7 +55,7 @@ Le projet est divisé en deux dossiers principaux :
 
 
 <p align="center">
-  <img src="frontend/public/LogoBlancBackgrounded.svg" alt="DLivret Logo" width="500"/>
+  <img src="frontend/public/LogoBlancBackgrounded.png" alt="DLivret Logo" width="500"/>
 </p>
 
 **A simple and accessible DApp to save and invest in DeFi**
