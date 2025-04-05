@@ -8,15 +8,15 @@ export default function LivretD() {
 
     const cards = [
         {
-          title: "Forest Adventure",
+          title: "Step 1",
           src: "",
         },
         {
-          title: "Valley of life",
+          title: "Step 2",
           src: "",
         },
         {
-          title: "Sala behta hi jayega",
+          title: "Step 3",
           src: "",
         },
       ];
