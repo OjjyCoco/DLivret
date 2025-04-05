@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/LogoBlancBackgrounded.svg" alt="DLivret Logo" width="500"/>
+  <img src="frontend/public/LogoBlancBackgrounded.png" alt="DLivret Logo" width="500"/>
 </p>
 
 **Une DApp simple et accessible pour épargner et investir en DeFi**
