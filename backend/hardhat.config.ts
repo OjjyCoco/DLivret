@@ -6,6 +6,7 @@ require("hardhat-gas-reporter");
 const ALCHEMY_MAINNET_RPC = process.env.ALCHEMY_MAINNET_RPC || ''
 const ALCHEMY_SEPOLIA_RPC = process.env.ALCHEMY_SEPOLIA_RPC || ''
 const SEPOLIA_ACC_PRIVATE_KEY = process.env.SEPOLIA_ACC_PRIVATE_KEY || ''
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || ''
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -38,6 +39,11 @@ const config: HardhatUserConfig = {
       chainId: 11155111,
       // blockConfirmations: 6,
     },
+  },
+  etherscan: {
+    apiKey: {
+      sepolia: ETHERSCAN_API_KEY,
+    }
   }
 };
 
