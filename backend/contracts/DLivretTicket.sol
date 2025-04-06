@@ -72,14 +72,16 @@ contract DLivretTicket is ERC1155, Ownable {
 
         emit TicketMinted(user, ticketId, 1);
     }
+    /// @notice Mints a lottery ticket for the specified user.
+    /// @param user The address of the user to receive the minted ticket.
+    /// @param value The amount of token to burn.
+    /// @dev Lotery contract might be an authorized caller (it might also be the only caller in the Dlivret DApp)
+    function burnTicket(address user, uint256 value) external onlyCallerContract {
+        uint256 ticketId = getCurrentTicketId();
+        _burn(user, ticketId, value);
 
-    // Lotery contract might be an authorized caller (it might also be the only caller in the Dlivret DApp)
-    // function burnTicket(address user, uint256 value) external onlyCallerContract {
-    //     uint256 ticketId = getCurrentTicketId();
-    //     _burn(user, ticketId, value);
-
-    //     emit TicketBurned(user, ticketId, value);
-    // }
+        emit TicketBurned(user, ticketId, value);
+    }
 
     /// @notice Overridden safeTransferFrom function to disable transfers of tickets.
     /// @dev Transfers are disabled for this contract. Only minting and burning by authorized callers are allowed.

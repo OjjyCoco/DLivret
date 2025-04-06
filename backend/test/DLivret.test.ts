@@ -515,6 +515,35 @@ describe("DLivretTicket Contract Tests", function () {
         });
     });
 
+    describe("Burning Tickets", function () {
+        it("Should allow caller contract to burn tickets", async function () {
+            const { dlivretTicket, user1 } = await loadFixture(deployDLivretTicketContract);
+    
+            // Mint ticket first
+            const latestBlock = await ethers.provider.getBlock('latest');
+            const blockTimestamp = latestBlock.timestamp;
+            const expectedTicketId = Math.floor(blockTimestamp / (7 * 24 * 60 * 60));
+            await dlivretTicket.connect(user1).mintTicket(user1.address);
+
+            const burning = dlivretTicket.connect(user1).burnTicket(user1.address, 1);
+            await expect(burning).to.emit(dlivretTicket, "TicketBurned").withArgs(user1.address, expectedTicketId, 1);
+    
+            const balanceAfter = await dlivretTicket.balanceOf(user1.address, expectedTicketId);
+            expect(balanceAfter).to.equal(0);
+        });
+    
+        it("Should revert if non-caller contract tries to burn", async function () {
+            const { dlivretTicket, owner, user2 } = await loadFixture(deployDLivretTicketContract);
+
+            await dlivretTicket.connect(owner).addContractCaller(owner.address);
+            await dlivretTicket.connect(owner).mintTicket(user2.address);
+
+            await expect(dlivretTicket.connect(user2).burnTicket(user2.address, 1))
+                .to.be.revertedWith("Not an authorized caller contract");
+        });
+    });
+    
+
     describe("Transferring Tickets", function () {
         beforeEach(async function () {
             const { dlivretTicket, owner, user1 } = await loadFixture(deployDLivretTicketContract);
