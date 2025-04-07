@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
 .app {
   @apply flex flex-col min-h-screen;
 }
@@ -15,7 +19,7 @@
 }
 
 .footer {
-  @apply w-full content-center p-10 bg-gray-800 text-white;
+  @apply w-full content-center p-10 text-white;
 }
 
 .flex-between {
