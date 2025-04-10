@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import ApproveButton from "@/components/shared/ApproveButton"
 import SwapComponent from "../shared/Swap";
 

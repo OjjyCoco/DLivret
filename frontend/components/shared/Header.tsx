@@ -7,6 +7,8 @@ import { useState } from "react";
 import { ModeToggle } from "./ModeToggle";
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 
+import { MdOutlineStar } from "react-icons/md";
+
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -22,8 +24,6 @@ import {
     NavigationMenuContent,
     NavigationMenuTrigger,
     NavigationMenuLink,
-    NavigationMenuIndicator,
-    NavigationMenuViewport,
 } from "@/components/ui/navigation-menu"
 
 const Header: React.FC = () => {
@@ -83,7 +83,12 @@ const Header: React.FC = () => {
                                             className="block p-3 transition hover:bg-gray-100 rounded-lg"
                                             onClick={() => setMenuOpen("")}
                                         >
-                                            <strong className="text-gray-900">{title}</strong>
+                                            <strong className="text-gray-900 flex items-center">
+                                                {title}
+                                                {title === "Livret D" && (
+                                                    <MdOutlineStar className="ml-2 text-yellow-500" />
+                                                )}
+                                            </strong>
                                             <p className="text-gray-600 text-sm">{description}</p>
                                         </Link>
                                     ))}

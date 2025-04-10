@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { contractAddress, contractAbi } from "@/constants/DLivretPTContract";
+import { contractAddress } from "@/constants/DLivretPTContract";
 
 export const approveDLivretPT = async () => {
   try {

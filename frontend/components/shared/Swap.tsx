@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 // wagmi
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 
 // contract
 import { contractAddress, contractAbi } from "@/constants/DLivretPTContract";
@@ -20,18 +20,18 @@ export default function SwapComponent() {
 
     const [amountUSDeIn, setAmountUSDeIn] = useState(0);
     const [amountPTUSDeIn, setAmountPTUSDeIn] = useState(0);
-    type BuyEvent = {
-      sender: string;
-      amountIn: number;
-      netPtOut: number;
-    };
-    const [buyEvent, setBuyEvent] = useState<BuyEvent | null>(null);
-    type SellEvent = {
-      sender: string;
-      amountPtIn: number;
-      netTokenOut: number;
-    };
-    const [sellEvent, setSellEvent] = useState<SellEvent | null>(null);
+    // type BuyEvent = {
+    //   sender: string;
+    //   amountIn: number;
+    //   netPtOut: number;
+    // };
+    // const [buyEvent, setBuyEvent] = useState<BuyEvent | null>(null);
+    // type SellEvent = {
+    //   sender: string;
+    //   amountPtIn: number;
+    //   netTokenOut: number;
+    // };
+    // const [sellEvent, setSellEvent] = useState<SellEvent | null>(null);
     const [transactionType, setTransactionType] = useState<"buy" | "sell" | null>(null);
 
 
@@ -86,7 +86,7 @@ export default function SwapComponent() {
           });
   
           // Mise à jour de l'état après l'affichage du toast
-          setBuyEvent(newBuyEvent);
+        //   setBuyEvent(newBuyEvent);
       }
     };
 
@@ -116,7 +116,7 @@ export default function SwapComponent() {
           });
   
           // Mise à jour de l'état après l'affichage du toast
-          setSellEvent(newSellEvent);
+        //   setSellEvent(newSellEvent);
       }
     };
 
@@ -149,14 +149,14 @@ export default function SwapComponent() {
       }
   
       if (writeIsPending) {
-          toast("Transaction en cours...", {
+          toast("Transaction en cours de validation...", {
               description: "La transaction est en cours de validation",
               duration: 10000,
           });
       }
   
       if (isConfirming) {
-          toast("Transaction en confirmation...", {
+          toast("Transaction en cours de confirmation...", {
               description: "La transaction est en cours de confirmation",
               duration: 10000,
           });
