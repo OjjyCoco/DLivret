@@ -14,6 +14,7 @@ contract DLivretPT is Ownable {
     IPMarket public market;
     address public tokenIn;
     address public PTtokenIn;
+    address public YTtokenIn;
     uint16 public buyingFees = 999;
     uint16 public sellingFees = 999;
     uint224 private _padding;
@@ -55,8 +56,9 @@ contract DLivretPT is Ownable {
         require(!IPMarket(_market).isExpired(), "Market has already expired");
         market = IPMarket(_market);
         tokenIn = _tokenIn;
-        ( , IPPrincipalToken _PT, ) = market.readTokens();
+        ( , IPPrincipalToken _PT, IPYieldToken _YT) = market.readTokens();
         PTtokenIn = address(_PT); // cast to address
+        YTtokenIn = address(_YT);
 
         IERC20(tokenIn).approve(address(router), type(uint256).max);
         IERC20(PTtokenIn).approve(address(router), type(uint256).max);
@@ -78,6 +80,7 @@ contract DLivretPT is Ownable {
     /// @return netPtOut The amount of PT received after fees.
     /// @dev A lottery ticket is minted for the user after the purchase.
     function buyPT(uint256 amountTokenIn) external returns (uint256 netPtOut) {
+        require(!IPMarket(market).isExpired(), "Market has expired");
         // Transfer tokenIn from user to contract
         require(IERC20(tokenIn).transferFrom(msg.sender, address(this), amountTokenIn), TransferFromError());
         uint256 amountSwaped = (amountTokenIn * buyingFees) / 1000;
@@ -103,17 +106,32 @@ contract DLivretPT is Ownable {
         // Transfer PT from user to contract
         require(IERC20(PTtokenIn).transferFrom(msg.sender, address(this), amountPtIn), TransferFromError());
         uint256 amountSwaped = (amountPtIn * sellingFees) / 1000;
-        (netTokenOut, , ) = router.swapExactPtForToken(
-            msg.sender, // receiver
-            address(market),
-            amountSwaped, // exactPtIn
-            createTokenOutputSimple(tokenIn, 0), // tokenOut, minTokenOut
-            createEmptyLimitOrderData()
-        );
+        if(!IPMarket(market).isExpired()){
+            (netTokenOut, , ) = router.swapExactPtForToken(
+                msg.sender, // receiver
+                address(market),
+                amountSwaped, // exactPtIn
+                createTokenOutputSimple(tokenIn, 0), // tokenOut, minTokenOut
+                createEmptyLimitOrderData()
+            );
 
-        dlivretTicket.mintTicket(msg.sender);
+            dlivretTicket.mintTicket(msg.sender);
 
-        emit SoldPT(msg.sender, amountSwaped, netTokenOut);
+            emit SoldPT(msg.sender, amountSwaped, netTokenOut);
+        }
+        else{
+            (netTokenOut, ) = router.redeemPyToToken(
+                msg.sender,
+                YTtokenIn,
+                amountSwaped,
+                createTokenOutputSimple(tokenIn, 0)
+            );
+
+            dlivretTicket.mintTicket(msg.sender);
+
+            emit SoldPT(msg.sender, amountSwaped, netTokenOut);
+        }
+        
     }
 
     /// @notice Allows the owner to withdraw any token or native ETH from the contract.

@@ -13,7 +13,7 @@ async function main() {
   ];
 
   // Connect to the USDe contract
-  const signer = await ethers.getSigner("0x1f015774346BFfe5941703ea429CE8b0B6C875D6"); // We just need one signer (the owner)
+  const signer = await ethers.getSigner("0x1f015774346BFfe5941703ea429CE8b0B6C875D6"); // We just need one signer (anyone)
   const usdeContract = await ethers.getContractAt("IERC20", USDeAddress, signer);
 
   // Iterate over each address and fetch the balance
@@ -52,10 +52,14 @@ async function main() {
 
   console.log("=======================")
 
+  
   const dlivretTicketContract = await ethers.getContractAt("IERC1155", ticketAddress, signer);
-  const tokenBalance = await dlivretTicketContract.balanceOf("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 2882);
+  const block = await ethers.provider.getBlock("latest");
+  const ticketId = Math.floor(block.timestamp / (7 * 24 * 60 * 60));
 
-  console.log("User SFT balance id 2882 : ", tokenBalance)
+  const tokenBalance = await dlivretTicketContract.balanceOf("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", ticketId);
+  console.log(`$User SFT balance ID ${ticketId} : ${tokenBalance}`);
+
 
 }
 

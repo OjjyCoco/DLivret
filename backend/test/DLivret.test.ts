@@ -1,6 +1,7 @@
 const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { assert, expect } = require("chai");
 const { ethers } = require("hardhat");
+const { constants } = require("ethers");
 const helpers = require("@nomicfoundation/hardhat-network-helpers");
 
 
@@ -71,8 +72,12 @@ describe("DLivretPT Contract Tests", function () {
             await dlivretPT.connect(owner).setMarketAndToken("0x9Df192D13D61609D1852461c4850595e1F56E714", "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3");
             const market = await dlivretPT.market();
             const tokenIn = await dlivretPT.tokenIn();
+            const PT = await dlivretPT.PTtokenIn();
+            const YT = await dlivretPT.YTtokenIn();
             expect(market).to.equal("0x9Df192D13D61609D1852461c4850595e1F56E714");
             expect(tokenIn).to.equal("0x4c9EDD5852cd905f086C759E8383e09bff1E68B3");
+            expect(PT).to.equal("0x917459337CaAC939D41d7493B3999f571D20D667");
+            expect(YT).to.equal("0x733Ee9Ba88f16023146EbC965b7A1Da18a322464");
         });
 
         it('Should revert if market is expired', async function () {
@@ -101,6 +106,20 @@ describe("DLivretPT Contract Tests", function () {
             const ptBalance = await PT.balanceOf(user.address);
             console.log(`User PT USDe balance after buying PT: ${ethers.formatUnits(ptBalance, 18)} PT USDe`);
             expect(ptBalance).to.be.gt(0);
+
+        });
+
+        it('Should not buy PT when the market is expired', async function () {
+            const { dlivretPT, user } = await loadFixture(readyToBuy);
+
+            const buyAmount = ethers.parseUnits("1000", 18);
+
+            const days = 200;
+            await helpers.time.increase(days * 24 * 60 * 60);
+            
+            // User buys PT
+            await expect(dlivretPT.connect(user).buyPT(buyAmount))
+                .to.be.revertedWith("Market has expired");
 
         });
 
@@ -194,12 +213,41 @@ describe("DLivretPT Contract Tests", function () {
             const transferAmount = ethers.parseUnits("1000", 18);
             await dlivretPT.connect(user).buyPT(transferAmount);
 
+        });
+    
+        it('Should sell PT USDe before maturity', async function () {
+
             // Advance time by days
             const days = 100;
             await helpers.time.increase(days * 24 * 60 * 60);
-        });
+
+            // Check PT balance before selling
+            const ptBalance = await PT.balanceOf(user.address);
+            expect(ptBalance).to.be.gt(0);
+            console.log(`User PT USDe balance before selling PT: ${ethers.formatUnits(ptBalance, 18)} PT USDe`);
+
+            const usdeBalanceBefore = await USDe.balanceOf(user.address);
+            console.log(`User USDe balance before selling PT: ${ethers.formatUnits(usdeBalanceBefore, 18)} USDe`);
     
-        it('Should sell PT USDe', async function () {
+            // Approve PT transfer
+            await PT.connect(user).approve(dlivretPT.target, ptBalance);
+    
+            // Sell PT
+            const sellTx = await dlivretPT.connect(user).sellPT(ptBalance);
+            const sellReceipt = await sellTx.wait();
+    
+            // Verify USDe balance after selling
+            const usdeBalanceAfter = await USDe.balanceOf(user.address);
+            console.log(`User USDe balance after selling PT: ${ethers.formatUnits(usdeBalanceAfter, 18)} USDe`);
+    
+            expect(usdeBalanceAfter).to.be.gt(0);
+        });
+
+        it('Should sell PT USDe after maturity', async function () {
+
+            // Advance time by days
+            const days = 200;
+            await helpers.time.increase(days * 24 * 60 * 60);
 
             // Check PT balance before selling
             const ptBalance = await PT.balanceOf(user.address);
@@ -243,7 +291,7 @@ describe("DLivretPT Contract Tests", function () {
 
             const userTicketBalance = await dlivretTicket.balanceOf(user.address, expectedTicketId);
             console.log("userTicketBalance: ", userTicketBalance)
-            expect(userTicketBalance).to.equal(1);
+            expect(userTicketBalance).to.equal(2); // 2 because buy and sell
 
         });
 
@@ -542,6 +590,71 @@ describe("DLivretTicket Contract Tests", function () {
                 .to.be.revertedWith("Not an authorized caller contract");
         });
     });
+
+    // describe("getCurrentTicketId", function () {
+    //     // ⚠️ Note: This test is harder to validate compared to real-life scenarios because
+    //     // Hardhat only produces new blocks when transactions are sent. Advancing time with
+    //     // helpers.time.increase does not automatically mine blocks, so only a few blocks may 
+    //     // exist even after simulating several days. Keep this in mind when reasoning about 
+    //     // time-based logic in tests.
+
+    //     it("Should return the same ticket ID within the same week", async function () {
+    //         const { dlivretTicket, user1 } = await loadFixture(deployDLivretTicketContract);
+        
+    //         const block1 = await ethers.provider.getBlock("latest");
+    //         const ticketId1Math = Math.floor(block1.timestamp / (7 * 24 * 60 * 60));
+    //         const ticketId1 = await dlivretTicket.getCurrentTicketId();
+    //         console.log("block1 timestamp: ", block1.number)
+    //         console.log("ticketId1Math: ", ticketId1Math)
+    //         console.log("ticketId1: ", ticketId1)
+        
+    //         await dlivretTicket.connect(user1).mintTicket(user1.address);
+    //         const balance1 = await dlivretTicket.balanceOf(user1.address, ticketId1);
+    //         expect(balance1).to.equal(1);
+        
+    //         // Advance time by 3 days (still same week)
+    //         // await ethers.provider.send("evm_increaseTime", [3 * 24 * 60 * 60]);
+    //         // await ethers.provider.send("evm_mine", []);
+    //         // const days = 1;
+    //         // await helpers.time.increase(days * 24 * 60 * 60);
+    //         // await helpers.time.increase(days * 24 * 60 * 60);
+
+    //         const block2 = await ethers.provider.getBlock("latest");
+    //         const ticketId2Math = Math.floor(block2.timestamp / (7 * 24 * 60 * 60));
+    //         const ticketId2 = await dlivretTicket.getCurrentTicketId(); 
+    //         console.log("block2 timestamp: ", block2.timestamp)
+    //         console.log("ticketId2Math: ", ticketId2Math)
+    //         console.log("ticketId2: ", ticketId2)
+
+    //         await dlivretTicket.connect(user1).mintTicket(user1.address);
+    //         const balance2 = await dlivretTicket.balanceOf(user1.address, ticketId1);
+    //         expect(balance2).to.equal(2);
+    //     });
+        
+    //     it("Should return a different ticket ID after 7 days", async function () {
+    //         const { dlivretTicket, user1 } = await loadFixture(deployDLivretTicketContract);
+        
+    //         const block1 = await ethers.provider.getBlock("latest");
+    //         const ticketId1 = Math.floor(block1.timestamp / (7 * 24 * 60 * 60));
+        
+    //         await dlivretTicket.connect(user1).mintTicket(user1.address);
+    //         const balanceWeek1 = await dlivretTicket.balanceOf(user1.address, ticketId1);
+    //         expect(balanceWeek1).to.equal(1);
+        
+    //         // Advance time by 8 days to move into a new week
+    //         await ethers.provider.send("evm_increaseTime", [8 * 24 * 60 * 60]);
+    //         await ethers.provider.send("evm_mine", []);
+        
+    //         const block2 = await ethers.provider.getBlock("latest");
+    //         const ticketId2 = Math.floor(block2.timestamp / (7 * 24 * 60 * 60));
+    //         expect(ticketId2).to.not.equal(ticketId1);
+        
+    //         await dlivretTicket.connect(user1).mintTicket(user1.address);
+    //         const balanceWeek2 = await dlivretTicket.balanceOf(user1.address, ticketId2);
+    //         expect(balanceWeek2).to.equal(1);
+    //     });
+        
+    // });
     
 
     describe("Transferring Tickets", function () {
