@@ -21,6 +21,12 @@ DLivret is a **micro-savings** and **decentralized finance (DeFi) investment** p
 
 To democratize decentralized finance by making it **accessible, educational, and efficient**.
 
+## 🔗 Useful Links
+
+- 🖥️ Frontend: [dlivret.vercel.app](https://dlivret.vercel.app/)
+- 🎥 Demo video: [YouTube](https://youtu.be/t7KX3Yd_nlI)
+
+
 ## 🛠️ Project Structure
 
 The project is divided into two main folders:
