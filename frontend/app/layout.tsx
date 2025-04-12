@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import MobileBlocker from "@/components/shared/MobileBlocker";
 
 // header and footer
 import Footer from "@/components/shared/Footer"
@@ -39,23 +40,25 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <RainbowkitProvider>
-          <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              disableTransitionOnChange
-            >
-            <div className="app">
-              <Header />
-                <main className="main">
-                  {children}
-                </main>
-                <Toaster />
-              <Footer />
-            </div>
-          </ThemeProvider>
-        </RainbowkitProvider>
+        <MobileBlocker>
+          <RainbowkitProvider>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem
+                disableTransitionOnChange
+              >
+              <div className="app">
+                <Header />
+                  <main className="main">
+                    {children}
+                  </main>
+                  <Toaster />
+                <Footer />
+              </div>
+            </ThemeProvider>
+          </RainbowkitProvider>
+        </MobileBlocker>
       </body>
     </html>
   );
