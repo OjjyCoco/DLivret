@@ -2,7 +2,8 @@
 import { TextHoverEffect } from "@/components/ui/text-hover-effect";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { FocusCards } from "@/components/ui/focus-cards";
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { PendleMarketComponent } from "@/components/shared/PendleMarketInfo";
 
 export default function LivretD() {
 
@@ -51,7 +52,7 @@ export default function LivretD() {
             words="En savoir plus sur le Livret DeFi"
             className="text-4xl md:text-6xl top-16 md:top-20 z-0"
         />
-        <h1>Des explications ici</h1>
+        <PendleMarketComponent/>
         </div>
     </>
   );
