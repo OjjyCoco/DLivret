@@ -19,7 +19,7 @@ contract DLivretPT is Ownable {
     uint16 public sellingFees = 999;
     uint224 private _padding;
     IPAllActionV3 public constant router = IPAllActionV3(0x888888888889758F76e7103c6CbF23ABbF58F946);
-    DLivretTicket public constant dlivretTicket = DLivretTicket(0xeA2e668d430e5AA15babA2f5c5edfd4F9Ef6EB73);
+    DLivretTicket public constant dlivretTicket = DLivretTicket(0x7722f5d7964a04672761cdfdC7c17B7Ac8f197b7);
 
     /// @dev Emitted when a user buys PT with a specific amount of token.
     /// @param sender The address of the user who bought PT.

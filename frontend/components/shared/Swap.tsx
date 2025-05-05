@@ -4,6 +4,7 @@ import { FaArrowDown } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { PendleMarketComponent } from "@/components/shared/PendleMarketInfo";
 
 // wagmi
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
@@ -215,6 +216,7 @@ export default function SwapComponent() {
                     </Button>
                 </div>
             </div>
+            <PendleMarketComponent/>
         </div>
     );
 }
