@@ -26,6 +26,7 @@ To democratize decentralized finance by making it **accessible, educational, and
 - 🖥️ Frontend: [dlivret.vercel.app](https://dlivret.vercel.app/)
 - 🎥 Demo video: [YouTube](https://youtu.be/t7KX3Yd_nlI)
 
+> ⚠️ Please note : DLivret relies on Ethereum mainnet contracts and has not yet been deployed to the mainnet. As a result, the website [DLivret](https://dlivret.vercel.app/) is currently non-functional. To interact with the DLivret contracts, we use a local mainnet fork with Hardhat as the project is in development process.
 
 ## 🛠️ Project Structure
 
@@ -48,6 +49,4 @@ The project is divided into two main folders:
   - The **frontend architecture**
   - Contract interaction and data integration
 
----
 
-> 💡 This project is currently under development...
